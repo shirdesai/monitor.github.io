@@ -52,17 +52,28 @@
       padding: 10px 0;
       overflow: hidden;
       white-space: nowrap;
+      position: relative;
     }
 
     .ticker-label {
-      display: inline-block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
       background: #58a6ff;
       color: #0d1117;
       font-weight: 700;
       font-size: 0.75rem;
-      padding: 3px 10px;
-      margin-right: 16px;
+      padding: 0 10px;
       letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .ticker-outer {
+      margin-left: 60px;
+      overflow: hidden;
     }
 
     .ticker-track {
@@ -167,10 +178,12 @@
   </header>
 
   <div class="ticker-wrap">
-    <span class="ticker-label">LIVE</span>
-    <span class="ticker-track" id="tickerTrack">
-      <span class="ticker-item">Loading news...</span>
-    </span>
+    <div class="ticker-label">LIVE</div>
+    <div class="ticker-outer">
+      <span class="ticker-track" id="tickerTrack">
+        <span class="ticker-item">Loading news...</span>
+      </span>
+    </div>
   </div>
 
   <div class="fallback-banner" id="fallbackBanner">
@@ -190,7 +203,7 @@
   ];
 
   const RSS_URL = 'https://www.aljazeera.com/xml/rss/all.xml';
-  const PROXY   = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
+  const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
 
   function isUAE(text) {
     const t = (text || '').toLowerCase();
@@ -207,30 +220,24 @@
 
   async function fetchNews() {
     try {
-      const res  = await fetch(PROXY);
-      if (!res.ok) throw new Error('Network response was not ok');
-      const data = await res.text();
-      const xml  = new DOMParser().parseFromString(data, 'text/xml');
-      const items = [...xml.querySelectorAll('item')];
+      const res  = await fetch(API_URL);
+      if (!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      if (!data.items || data.items.length === 0) throw new Error('no items');
 
-      if (items.length === 0) throw new Error('No items in feed');
+      const items = data.items;
 
-      // Try UAE-specific first
-      const uaeItems = items.filter(item => {
-        const title = item.querySelector('title')?.textContent || '';
-        const desc  = item.querySelector('description')?.textContent || '';
-        return isUAE(title) || isUAE(desc);
-      });
+      const uaeItems = items.filter(item =>
+        isUAE(item.title) || isUAE(item.description)
+      );
 
       const banner = document.getElementById('fallbackBanner');
 
       if (uaeItems.length > 0) {
-        // UAE news found
         banner.style.display = 'none';
         renderCards(uaeItems);
         renderTicker(uaeItems);
       } else {
-        // No UAE news — fall back to all items
         banner.style.display = 'block';
         renderCards(items.slice(0, 20));
         renderTicker(items.slice(0, 20));
@@ -247,24 +254,19 @@
   function renderCards(items) {
     const grid = document.getElementById('newsGrid');
     grid.innerHTML = items.map(item => {
-      const title = item.querySelector('title')?.textContent || 'No title';
-      const link  = item.querySelector('link')?.textContent || '#';
-      const date  = item.querySelector('pubDate')?.textContent || '';
       return `
-        <a class="news-card" href="${link}" target="_blank" rel="noopener">
-          <div class="date">${formatDate(date)}</div>
-          <h3>${title}</h3>
+        <a class="news-card" href="${item.link}" target="_blank" rel="noopener">
+          <div class="date">${formatDate(item.pubDate)}</div>
+          <h3>${item.title}</h3>
         </a>`;
     }).join('');
   }
 
   function renderTicker(items) {
     const track = document.getElementById('tickerTrack');
-    const html = [...items, ...items].map(item => {
-      const title = item.querySelector('title')?.textContent || '';
-      const link  = item.querySelector('link')?.textContent || '#';
-      return `<span class="ticker-item" onclick="window.open('${link}','_blank')">${title}</span>`;
-    }).join('');
+    const html = [...items, ...items].map(item =>
+      `<span class="ticker-item" onclick="window.open('${item.link}','_blank')">${item.title}</span>`
+    ).join('');
     track.innerHTML = html;
   }
 

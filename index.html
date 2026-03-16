@@ -6,351 +6,438 @@
 <title>UAE News Monitor</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-::-webkit-scrollbar{height:0;width:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#05080f;color:#e2e8f0;min-height:100vh}
-.wrap{max-width:480px;margin:0 auto}
-.hdr{position:sticky;top:0;z-index:50;background:#05080fee;backdrop-filter:blur(12px);padding:14px 16px 0;border-bottom:1px solid #111827}
-.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.logo{display:flex;align-items:center;gap:8px}
-.logo span{font-size:16px;font-weight:700;letter-spacing:.5px}
-.hdr-r{display:flex;align-items:center;gap:8px;font-size:10px;color:#475569}
-.hdr-r button{background:none;border:1px solid #1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer}
+.wrap{max-width:520px;margin:0 auto}
+
+/* Header */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(5,8,15,.95);backdrop-filter:blur(12px);padding:14px 16px 0;border-bottom:1px solid #111827}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-left .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hdr-left h1{font-size:17px;font-weight:700;letter-spacing:.5px}
+.hdr-right{display:flex;align-items:center;gap:8px;font-size:10px;color:#475569}
+.refresh-btn{background:none;border:1px solid #1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer}
+.refresh-btn:hover{border-color:#334155;color:#94a3b8}
+
+/* Days strip */
 .days{display:flex;gap:4px;padding-bottom:12px}
-.day-btn{flex:1 1 0;border:none;border-radius:10px;padding:6px 2px;cursor:pointer;text-align:center;min-width:0;transition:all .15s}
-.day-btn .dw{font-size:9px;font-weight:600}
-.day-btn .dd{font-size:15px;font-weight:700}
-.day-btn .dot-sm{width:4px;height:4px;border-radius:2px;margin:3px auto 0}
-.body{padding:12px 16px}
+.dbtn{flex:1 1 0;background:#111827;border:none;border-radius:10px;padding:7px 2px;cursor:pointer;text-align:center;min-width:0;transition:background .15s,opacity .15s}
+.dbtn.active{background:#3b82f6}
+.dbtn .dw{font-size:9px;font-weight:600;color:#475569}
+.dbtn.active .dw{color:#dbeafe}
+.dbtn .dd{font-size:16px;font-weight:700;color:#e2e8f0;line-height:1.2}
+.dbtn.active .dd{color:#fff}
+.dbtn .ddot{width:4px;height:4px;border-radius:50%;background:#3b82f6;margin:3px auto 0}
+.dbtn.active .ddot{background:#fff}
+
+/* Body */
+.main{padding:12px 16px 24px}
+
+/* Stats row */
 .stats{display:flex;gap:8px;margin-bottom:14px}
-.stat{flex:1 1 0;background:#0c1117;border:1px solid #151d28;border-radius:10px;padding:10px 8px;text-align:center}
-.stat .v{font-size:18px;font-weight:700}
-.stat .l{font-size:9px;color:#475569;margin-top:1px}
+.sbox{flex:1;background:#0c1117;border:1px solid #151d28;border-radius:10px;padding:10px 8px;text-align:center}
+.sbox .sv{font-size:20px;font-weight:700;line-height:1}
+.sbox .sl{font-size:9px;color:#475569;margin-top:3px}
+
+/* Category pills */
 .pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:14px;-webkit-overflow-scrolling:touch}
-.pill{border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;border-width:1px;border-style:solid}
+.pill{background:transparent;border:1px solid #1e293b;color:#64748b;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.pill.on{background:var(--pbg);border-color:var(--pbd);color:var(--ptx)}
+
+/* News cards */
 .cards{display:flex;flex-direction:column;gap:10px}
-.card{background:#0c1117;border:1px solid #151d28;border-radius:14px;overflow:hidden;cursor:pointer}
-.card.urg{border-color:rgba(239,68,68,.2)}
-.card-in{padding:14px 16px}
-.card-tags{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-.tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px}
-.urg-tag{font-size:10px;font-weight:700;color:#ef4444}
+.card{background:#0c1117;border:1px solid #151d28;border-radius:14px;cursor:pointer;overflow:hidden;transition:border-color .15s}
+.card:hover{border-color:#1e293b}
+.card.urgent{border-color:rgba(239,68,68,.25)}
+.card-inner{padding:14px 16px;border-left:3px solid var(--cbd,#64748b)}
+.card-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.card-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;background:var(--cbg);color:var(--ctx)}
+.card-urg{font-size:10px;font-weight:700;color:#ef4444}
 .card-time{margin-left:auto;font-size:11px;color:#475569}
 .card-title{font-size:15px;font-weight:600;color:#f1f5f9;line-height:1.45}
-.card-body{margin-top:12px;padding-top:12px;border-top:1px solid #151d28}
-.card-desc{font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:8px}
-.card-meta{display:flex;justify-content:space-between;align-items:center}
+.card-expand{margin-top:12px;padding-top:12px;border-top:1px solid #151d28;animation:fadeIn .2s}
+.card-desc{font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:10px}
+.card-foot{display:flex;justify-content:space-between;align-items:center}
 .card-src{font-size:11px;color:#374151}
 .card-link{font-size:11px;color:#3b82f6;text-decoration:none;font-weight:600}
-.card-more{text-align:right;margin-top:6px;font-size:10px;color:#334155}
-.center{text-align:center;padding:80px 20px}
+.card-link:hover{text-decoration:underline}
+.card-toggle{text-align:right;margin-top:6px;font-size:10px;color:#334155}
+
+/* States */
+.loading-box{text-align:center;padding:80px 20px}
 .spinner{width:40px;height:40px;border-radius:50%;border:3px solid #1e293b;border-top-color:#3b82f6;margin:0 auto 20px;animation:spin 1s linear infinite}
-.foot{text-align:center;padding:24px 0 32px;color:#1e293b;font-size:10px}
-.warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#fbbf24}
-.err-btn{background:#3b82f6;color:#fff;border:none;padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+.error-box{text-align:center;padding:60px 20px}
+.retry-btn{background:#3b82f6;color:#fff;border:none;padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+.retry-btn:hover{background:#2563eb}
+.soft-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#fbbf24}
+.empty{text-align:center;padding:40px 16px;color:#475569;font-size:13px}
+.footer{text-align:center;padding:20px 0 32px;color:#1e293b;font-size:10px}
+
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="hdr">
-    <div class="hdr-top">
-      <div class="logo"><div class="dot" id="statusDot"></div><span>UAE NEWS</span></div>
-      <div class="hdr-r">
-        <span id="timeLabel"></span>
-        <span id="cdLabel"></span>
-        <button id="refreshBtn" onclick="loadNews()" style="display:none">↻</button>
-      </div>
-    </div>
-    <div class="days" id="daysBar"></div>
-  </div>
-  <div class="body">
-    <div id="content"></div>
-    <div class="foot">Powered by Google News RSS via rss2json • Auto-refreshes every 10 min</div>
-  </div>
-</div>
+<div class="wrap" id="app"></div>
 
 <script>
+/* ===== CONFIG ===== */
 const FEEDS = [
-  "https://news.google.com/rss/search?q=UAE+news+today&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Dubai+news&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+Iran+conflict&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+flights+airport+DXB&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Abu+Dhabi+news+today&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+news&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Dubai+news+today&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+Iran+war+2026&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+flights+airport&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Abu+Dhabi+news&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+safety+alert&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Strait+of+Hormuz&hl=en&gl=AE&ceid=AE:en",
 ];
+const PROXY = url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=20`;
+const PROXY2 = url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+const REFRESH_MS = 600000;
 
-// Two RSS proxy services for redundancy
-const PROXIES = [
-  url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+/* ===== CATEGORIZATION ===== */
+const RULES = [
+  { c: "CONFLICT", k: ["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","weapon","military operation"] },
+  { c: "FLIGHTS", k: ["flight","airport","dxb","airline","emirates airline","etihad","aviation","airspace","cancel","passenger"] },
+  { c: "DEFENCE", k: ["intercept","missile","drone","air defen","ballistic","irgc","shield","air force","navy","warship"] },
+  { c: "SAFETY", k: ["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect"] },
+  { c: "DIPLOMACY", k: ["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiate"] },
+  { c: "ECONOMY", k: ["oil price","economic","market","trade","port","shipping","crude","stock","barrel","fuel"] },
+  { c: "COMMUNITY", k: ["expat","resident","school","remote","daily life","ramadan","community","citizen"] },
 ];
-
-const REFRESH = 600000;
-const CAT_RULES = [
-  {c:"CONFLICT",k:["iran","war","strike","attack","bomb","kharg","hormuz","military","weapon","retaliat"]},
-  {c:"FLIGHTS",k:["flight","airport","dxb","airline","emirates","etihad","aviation","airspace","cancel"]},
-  {c:"DEFENCE",k:["intercept","missile","drone","air defence","air defense","ballistic","irgc","shield"]},
-  {c:"SAFETY",k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger"]},
-  {c:"DIPLOMACY",k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty"]},
-  {c:"ECONOMY",k:["oil price","economic","market","trade","port","shipping","crude","stock","barrel"]},
-  {c:"COMMUNITY",k:["expat","resident","school","remote","daily life","ramadan","community"]},
-];
-
 const COLORS = {
-  CONFLICT:{bg:"rgba(244,63,94,.12)",tx:"#fda4af",bd:"#f43f5e"},
-  FLIGHTS:{bg:"rgba(59,130,246,.12)",tx:"#93c5fd",bd:"#3b82f6"},
-  DEFENCE:{bg:"rgba(34,197,94,.12)",tx:"#86efac",bd:"#22c55e"},
-  SAFETY:{bg:"rgba(245,158,11,.12)",tx:"#fcd34d",bd:"#f59e0b"},
-  DIPLOMACY:{bg:"rgba(168,85,247,.12)",tx:"#d8b4fe",bd:"#a855f7"},
-  ECONOMY:{bg:"rgba(234,179,8,.12)",tx:"#fde047",bd:"#eab308"},
-  COMMUNITY:{bg:"rgba(99,102,241,.12)",tx:"#a5b4fc",bd:"#6366f1"},
-  GENERAL:{bg:"rgba(148,163,184,.08)",tx:"#94a3b8",bd:"#64748b"},
+  CONFLICT: { bg:"rgba(244,63,94,.12)", tx:"#fda4af", bd:"#f43f5e" },
+  FLIGHTS:  { bg:"rgba(59,130,246,.12)", tx:"#93c5fd", bd:"#3b82f6" },
+  DEFENCE:  { bg:"rgba(34,197,94,.12)", tx:"#86efac", bd:"#22c55e" },
+  SAFETY:   { bg:"rgba(245,158,11,.12)", tx:"#fcd34d", bd:"#f59e0b" },
+  DIPLOMACY:{ bg:"rgba(168,85,247,.12)", tx:"#d8b4fe", bd:"#a855f7" },
+  ECONOMY:  { bg:"rgba(234,179,8,.12)", tx:"#fde047", bd:"#eab308" },
+  COMMUNITY:{ bg:"rgba(99,102,241,.12)", tx:"#a5b4fc", bd:"#6366f1" },
+  GENERAL:  { bg:"rgba(148,163,184,.08)",tx:"#94a3b8", bd:"#64748b" },
 };
 
-let news = [], status = "loading", lastUp = null, cd = REFRESH/1000;
-let selCat = "ALL", selDay = null, expanded = null;
-let cdInterval, refreshInterval;
-
-function categorize(text) {
-  const t = text.toLowerCase();
-  for (const r of CAT_RULES) { if (r.k.some(k => t.includes(k))) return r.c; }
+function classify(text) {
+  var t = text.toLowerCase();
+  for (var i = 0; i < RULES.length; i++) {
+    for (var j = 0; j < RULES[i].k.length; j++) {
+      if (t.indexOf(RULES[i].k[j]) !== -1) return RULES[i].c;
+    }
+  }
   return "GENERAL";
 }
-
 function isUrgent(title) {
-  const t = title.toLowerCase();
-  return ["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy"].some(k => t.includes(k));
+  var t = title.toLowerCase();
+  var kws = ["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy","fire"];
+  for (var i = 0; i < kws.length; i++) { if (t.indexOf(kws[i]) !== -1) return true; }
+  return false;
 }
+function strip(s) { return (s || "").replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim(); }
+function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
-function stripHTML(s) {
-  return (s||"").replace(/<[^>]*>/g,"").replace(/&[^;]+;/g," ").replace(/\s+/g," ").trim();
-}
+/* ===== STATE ===== */
+var news = [];
+var state = "loading"; // loading | ready | error
+var lastUp = null;
+var countdown = REFRESH_MS / 1000;
+var selCat = "ALL";
+var selDay = null;
+var expanded = null;
+var softError = "";
 
-function getLast7Days() {
-  const r = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(); d.setDate(d.getDate()-i);
-    r.push({key:d.toISOString().slice(0,10), d:d.getDate(), wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()], today:i===0});
-  }
-  return r;
-}
-
-// Parse rss2json response
+/* ===== FEED FETCHING ===== */
 function parseRss2Json(data) {
-  if (data.status !== "ok" || !data.items) return [];
-  return data.items.map(item => {
-    const pub = new Date(item.pubDate);
-    return {
-      title: (item.title||"").trim(),
-      desc: stripHTML(item.description).slice(0,300),
-      link: item.link||"#",
-      src: (item.author||"").replace(/^www\./,""),
-      pub, date: pub.toISOString().slice(0,10),
-      time: pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),
-      ts: pub.getTime(),
-    };
-  });
+  if (!data || data.status !== "ok" || !Array.isArray(data.items)) return [];
+  return data.items;
 }
 
-// Parse raw RSS XML
-function parseRawXML(text) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(text, "text/xml");
-  const items = doc.querySelectorAll("item");
-  return Array.from(items).map(item => {
-    const title = (item.querySelector("title")?.textContent||"").trim();
-    const desc = stripHTML(item.querySelector("description")?.textContent||"").slice(0,300);
-    const link = item.querySelector("link")?.textContent||"#";
-    const src = item.querySelector("source")?.textContent||"";
-    const pub = new Date(item.querySelector("pubDate")?.textContent||"");
-    return {
-      title, desc, link, src, pub,
-      date: pub.toISOString().slice(0,10),
-      time: pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),
-      ts: pub.getTime(),
-    };
-  });
+function parseXML(text) {
+  try {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(text, "text/xml");
+    var items = doc.querySelectorAll("item");
+    var results = [];
+    items.forEach(function(item) {
+      results.push({
+        title: (item.querySelector("title") || {}).textContent || "",
+        description: (item.querySelector("description") || {}).textContent || "",
+        link: (item.querySelector("link") || {}).textContent || "#",
+        author: (item.querySelector("source") || {}).textContent || "",
+        pubDate: (item.querySelector("pubDate") || {}).textContent || "",
+      });
+    });
+    return results;
+  } catch(e) { return []; }
 }
 
-async function fetchFeed(feedUrl) {
-  // Try rss2json first
+async function fetchOneFeed(feedUrl) {
+  // Try proxy 1
   try {
-    const res = await fetch(PROXIES[0](feedUrl));
+    var res = await fetch(PROXY(feedUrl));
     if (res.ok) {
-      const data = await res.json();
-      const items = parseRss2Json(data);
+      var data = await res.json();
+      var items = parseRss2Json(data);
       if (items.length > 0) return items;
     }
-  } catch(e) { console.warn("rss2json failed:", e.message); }
+  } catch(e) { /* fallthrough */ }
 
-  // Fallback: allorigins proxy + raw XML parsing
+  // Try proxy 2
   try {
-    const res = await fetch(PROXIES[1](feedUrl));
-    if (res.ok) {
-      const text = await res.text();
-      const items = parseRawXML(text);
-      if (items.length > 0) return items;
+    var res2 = await fetch(PROXY2(feedUrl));
+    if (res2.ok) {
+      var text = await res2.text();
+      var items2 = parseXML(text);
+      if (items2.length > 0) return items2;
     }
-  } catch(e) { console.warn("allorigins failed:", e.message); }
+  } catch(e) { /* fallthrough */ }
 
   return [];
 }
 
 async function fetchAllFeeds() {
-  const results = [];
-  const seen = new Set();
-  const now = new Date();
-  const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate()-7);
+  var results = [];
+  var seen = {};
+  var now = Date.now();
+  var weekAgo = now - 7 * 86400000;
 
-  const allResults = await Promise.allSettled(FEEDS.map(f => fetchFeed(f)));
+  var promises = FEEDS.map(function(f) { return fetchOneFeed(f); });
+  var settled = await Promise.allSettled(promises);
 
-  for (const result of allResults) {
-    if (result.status !== "fulfilled") continue;
-    for (const item of result.value) {
-      const key = item.title.toLowerCase().slice(0,60);
-      if (!key || seen.has(key)) continue;
-      if (item.pub < weekAgo || isNaN(item.ts)) continue;
-      seen.add(key);
+  settled.forEach(function(res) {
+    if (res.status !== "fulfilled") return;
+    res.value.forEach(function(item) {
+      var title = (item.title || "").trim();
+      var key = title.toLowerCase().slice(0, 50);
+      if (!key || seen[key]) return;
 
-      const cat = categorize(item.title + " " + item.desc);
-      results.push({ ...item, cat, urgent: isUrgent(item.title) });
-    }
-  }
+      var pub = new Date(item.pubDate);
+      if (isNaN(pub.getTime()) || pub.getTime() < weekAgo) return;
+      seen[key] = true;
 
-  results.sort((a,b) => b.ts - a.ts);
+      var desc = strip(item.description || "").slice(0, 350);
+      var cat = classify(title + " " + desc);
+
+      results.push({
+        title: title,
+        desc: desc,
+        link: item.link || "#",
+        src: (item.author || "").replace(/^www\./, ""),
+        cat: cat,
+        urgent: isUrgent(title),
+        date: pub.toISOString().slice(0, 10),
+        time: pub.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+        ts: pub.getTime(),
+      });
+    });
+  });
+
+  results.sort(function(a, b) { return b.ts - a.ts; });
   return results;
 }
 
+/* ===== LOAD ===== */
 async function loadNews() {
-  if (news.length === 0) status = "loading";
+  if (news.length === 0) { state = "loading"; }
+  softError = "";
   render();
 
   try {
-    const items = await fetchAllFeeds();
-    if (items.length === 0) throw new Error("No articles found — feeds may be temporarily unavailable. Will retry automatically.");
+    var items = await fetchAllFeeds();
+    if (items.length === 0) throw new Error("No articles returned");
     news = items;
     lastUp = new Date();
-    cd = REFRESH / 1000;
-    status = "ready";
+    countdown = REFRESH_MS / 1000;
+    state = "ready";
+    softError = "";
   } catch(e) {
-    console.error("Feed error:", e.message);
     if (news.length > 0) {
-      cd = REFRESH / 1000;
-      status = "ready";
+      softError = "Refresh failed — showing last data. Will retry.";
+      countdown = REFRESH_MS / 1000;
     } else {
-      status = "error";
+      state = "error";
     }
   }
   render();
 }
 
-function render() {
-  const days = getLast7Days();
-  const dot = document.getElementById("statusDot");
-  dot.style.background = status==="loading"?"#facc15":status==="ready"?"#22c55e":"#ef4444";
-  dot.style.boxShadow = `0 0 6px ${status==="loading"?"#facc1544":status==="ready"?"#22c55e44":"#ef444444"}`;
-
-  const mn = Math.floor(cd/60), sc = cd%60;
-  document.getElementById("timeLabel").textContent = lastUp ? lastUp.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) : "";
-  document.getElementById("cdLabel").textContent = status==="loading"?"loading…":`${mn}:${String(sc).padStart(2,"0")}`;
-  document.getElementById("refreshBtn").style.display = status==="loading"?"none":"inline-block";
-
-  // Days bar
-  const daysBar = document.getElementById("daysBar");
-  if (news.length > 0) {
-    let dh = `<button class="day-btn" onclick="setDay(null)" style="background:${!selDay?'#3b82f6':'#111827'}">
-      <div class="dw" style="color:${!selDay?'#dbeafe':'#475569'}">ALL</div>
-      <div class="dd" style="color:${!selDay?'#fff':'#64748b'}">${news.length}</div></button>`;
-    for (const d of days) {
-      const ct = news.filter(n=>n.date===d.key).length;
-      const a = selDay===d.key;
-      dh += `<button class="day-btn" onclick="setDay('${d.key}')" style="background:${a?'#3b82f6':'#111827'};opacity:${ct?1:.3}">
-        <div class="dw" style="color:${a?'#dbeafe':'#475569'}">${d.today?"TODAY":d.wd}</div>
-        <div class="dd" style="color:${a?'#fff':'#e2e8f0'}">${d.d}</div>
-        ${ct>0?`<div class="dot-sm" style="background:${a?'#fff':'#3b82f6'}"></div>`:""}
-      </button>`;
-    }
-    daysBar.innerHTML = dh;
-  } else {
-    daysBar.innerHTML = "";
+/* ===== HELPERS ===== */
+function getLast7() {
+  var r = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    r.push({
+      key: d.toISOString().slice(0, 10),
+      d: d.getDate(),
+      wd: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],
+      today: i === 0
+    });
   }
-
-  // Content
-  const el = document.getElementById("content");
-
-  if (status === "loading" && news.length === 0) {
-    el.innerHTML = `<div class="center"><div class="spinner"></div><div style="color:#94a3b8;font-size:14px;margin-bottom:4px">Loading UAE news feeds…</div><div style="color:#475569;font-size:11px">Fetching from multiple sources</div></div>`;
-    return;
-  }
-
-  if (status === "error" && news.length === 0) {
-    el.innerHTML = `<div class="center"><div style="font-size:28px;margin-bottom:12px">⚠️</div><div style="color:#f87171;font-size:13px;margin-bottom:16px">Could not load news feeds</div><button class="err-btn" onclick="loadNews()">Retry</button></div>`;
-    return;
-  }
-
-  const cats = ["ALL",...new Set(news.map(n=>n.cat))];
-  const list = news.filter(n=>(selCat==="ALL"||n.cat===selCat)&&(!selDay||n.date===selDay));
-  const urg = news.filter(n=>n.urgent).length;
-  const todayCount = news.filter(n=>n.date===days[0]?.key).length;
-
-  let h = "";
-
-  // Stats
-  h += `<div class="stats">
-    <div class="stat"><div class="v" style="color:#60a5fa">${news.length}</div><div class="l">stories</div></div>
-    <div class="stat"><div class="v" style="color:#f87171">${urg}</div><div class="l">urgent</div></div>
-    <div class="stat"><div class="v" style="color:#4ade80">${todayCount}</div><div class="l">today</div></div>
-  </div>`;
-
-  // Pills
-  h += `<div class="pills">`;
-  for (const f of cats) {
-    const a = selCat===f, c = COLORS[f]||COLORS.GENERAL;
-    h += `<button class="pill" onclick="setCat('${f}')" style="background:${a?c.bg:'transparent'};border-color:${a?c.bd:'#1e293b'};color:${a?c.tx:'#64748b'}">${f}</button>`;
-  }
-  h += `</div>`;
-
-  // Cards
-  h += `<div class="cards">`;
-  if (list.length === 0) {
-    h += `<div style="text-align:center;padding:40px 16px;color:#475569;font-size:13px">No stories match this filter.</div>`;
-  }
-  list.forEach((n,i) => {
-    const c = COLORS[n.cat]||COLORS.GENERAL;
-    const k = `${selCat}-${selDay}-${i}`;
-    const open = expanded===k;
-    h += `<div class="card${n.urgent?' urg':''}" onclick="toggle('${k}')">
-      <div class="card-in" style="border-left:3px solid ${c.bd}">
-        <div class="card-tags">
-          <span class="tag" style="background:${c.bg};color:${c.tx}">${n.cat}</span>
-          ${n.urgent?'<span class="urg-tag">URGENT</span>':''}
-          <span class="card-time">${n.time}</span>
-        </div>
-        <div class="card-title">${n.title}</div>
-        ${open?`<div class="card-body">
-          <div class="card-desc">${n.desc}</div>
-          <div class="card-meta">
-            <span class="card-src">${n.src}</span>
-            <a class="card-link" href="${n.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read article →</a>
-          </div>
-        </div>`:''}
-        <div class="card-more">${open?'▲ Less':'▼ More'}</div>
-      </div>
-    </div>`;
-  });
-  h += `</div>`;
-
-  el.innerHTML = h;
+  return r;
 }
 
-function setDay(d) { selDay = (selDay===d)?null:d; expanded=null; render(); }
-function setCat(c) { selCat = c; expanded=null; render(); }
-function toggle(k) { expanded = (expanded===k)?null:k; render(); }
+/* ===== RENDER ===== */
+function render() {
+  var days = getLast7();
+  var mn = Math.floor(countdown / 60);
+  var sc = countdown % 60;
+  var timeStr = lastUp ? lastUp.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) : "";
+  var dotColor = state === "loading" ? "#facc15" : state === "ready" ? "#22c55e" : "#ef4444";
+  var cdText = state === "loading" ? "loading…" : mn + ":" + String(sc).padStart(2, "0");
 
-// Init
+  // Filter
+  var filtered = [];
+  for (var i = 0; i < news.length; i++) {
+    var n = news[i];
+    if (selCat !== "ALL" && n.cat !== selCat) continue;
+    if (selDay && n.date !== selDay) continue;
+    filtered.push(n);
+  }
+
+  var cats = ["ALL"];
+  var catSet = {};
+  news.forEach(function(n) { if (!catSet[n.cat]) { catSet[n.cat] = true; cats.push(n.cat); } });
+
+  var urgCount = 0;
+  var todayCount = 0;
+  news.forEach(function(n) { if (n.urgent) urgCount++; if (days[0] && n.date === days[0].key) todayCount++; });
+
+  var html = '';
+
+  /* HEADER */
+  html += '<div class="hdr">';
+  html += '<div class="hdr-row">';
+  html += '<div class="hdr-left"><div class="dot" style="background:' + dotColor + ';box-shadow:0 0 6px ' + dotColor + '44"></div><h1>UAE NEWS MONITOR</h1></div>';
+  html += '<div class="hdr-right">';
+  if (timeStr) html += '<span>' + timeStr + '</span>';
+  html += '<span>' + cdText + '</span>';
+  if (state !== "loading") html += '<button class="refresh-btn" onclick="loadNews()">↻</button>';
+  html += '</div></div>';
+
+  /* DAYS STRIP */
+  if (news.length > 0) {
+    html += '<div class="days">';
+    html += '<button class="dbtn' + (!selDay ? ' active' : '') + '" onclick="window._setDay(null)">';
+    html += '<div class="dw">' + (!selDay ? 'ALL' : 'ALL') + '</div><div class="dd">' + news.length + '</div></button>';
+    days.forEach(function(d) {
+      var ct = 0;
+      news.forEach(function(n) { if (n.date === d.key) ct++; });
+      var active = selDay === d.key;
+      html += '<button class="dbtn' + (active ? ' active' : '') + '" style="opacity:' + (ct > 0 ? '1' : '.3') + '" onclick="window._setDay(\'' + d.key + '\')">';
+      html += '<div class="dw">' + (d.today ? 'TODAY' : d.wd) + '</div>';
+      html += '<div class="dd">' + d.d + '</div>';
+      if (ct > 0) html += '<div class="ddot"></div>';
+      html += '</button>';
+    });
+    html += '</div>';
+  }
+  html += '</div>'; // end hdr
+
+  /* MAIN */
+  html += '<div class="main">';
+
+  /* LOADING STATE */
+  if (state === "loading" && news.length === 0) {
+    html += '<div class="loading-box"><div class="spinner"></div>';
+    html += '<div style="color:#94a3b8;font-size:14px;margin-bottom:4px">Loading UAE news feeds…</div>';
+    html += '<div style="color:#475569;font-size:11px">Fetching from Google News RSS</div></div>';
+    html += '</div>';
+    document.getElementById("app").innerHTML = html;
+    return;
+  }
+
+  /* ERROR STATE */
+  if (state === "error" && news.length === 0) {
+    html += '<div class="error-box"><div style="font-size:28px;margin-bottom:12px">⚠️</div>';
+    html += '<div style="color:#f87171;font-size:13px;margin-bottom:4px">Could not load news feeds</div>';
+    html += '<div style="color:#475569;font-size:11px;margin-bottom:20px">RSS proxies may be temporarily unavailable</div>';
+    html += '<button class="retry-btn" onclick="loadNews()">Retry</button></div>';
+    html += '</div>';
+    document.getElementById("app").innerHTML = html;
+    return;
+  }
+
+  /* SOFT ERROR */
+  if (softError) {
+    html += '<div class="soft-warn">⚠️ ' + esc(softError) + '</div>';
+  }
+
+  /* STATS */
+  html += '<div class="stats">';
+  html += '<div class="sbox"><div class="sv" style="color:#60a5fa">' + news.length + '</div><div class="sl">stories</div></div>';
+  html += '<div class="sbox"><div class="sv" style="color:#f87171">' + urgCount + '</div><div class="sl">urgent</div></div>';
+  html += '<div class="sbox"><div class="sv" style="color:#4ade80">' + todayCount + '</div><div class="sl">today</div></div>';
+  html += '</div>';
+
+  /* CATEGORY PILLS */
+  html += '<div class="pills">';
+  cats.forEach(function(f) {
+    var c = COLORS[f] || COLORS.GENERAL;
+    var active = selCat === f;
+    if (active) {
+      html += '<button class="pill on" style="--pbg:' + c.bg + ';--pbd:' + c.bd + ';--ptx:' + c.tx + '" onclick="window._setCat(\'' + f + '\')">' + f + '</button>';
+    } else {
+      html += '<button class="pill" onclick="window._setCat(\'' + f + '\')">' + f + '</button>';
+    }
+  });
+  html += '</div>';
+
+  /* NEWS CARDS */
+  html += '<div class="cards">';
+  if (filtered.length === 0) {
+    html += '<div class="empty">No stories match this filter.</div>';
+  }
+  filtered.forEach(function(n, i) {
+    var c = COLORS[n.cat] || COLORS.GENERAL;
+    var k = selCat + "-" + (selDay || "all") + "-" + i;
+    var open = expanded === k;
+
+    html += '<div class="card' + (n.urgent ? ' urgent' : '') + '" onclick="window._toggle(\'' + k + '\')">';
+    html += '<div class="card-inner" style="--cbd:' + c.bd + '">';
+
+    // Top bar
+    html += '<div class="card-top">';
+    html += '<span class="card-tag" style="--cbg:' + c.bg + ';--ctx:' + c.tx + '">' + esc(n.cat) + '</span>';
+    if (n.urgent) html += '<span class="card-urg">URGENT</span>';
+    html += '<span class="card-time">' + esc(n.time) + '</span>';
+    html += '</div>';
+
+    // Title
+    html += '<div class="card-title">' + esc(n.title) + '</div>';
+
+    // Expanded
+    if (open) {
+      html += '<div class="card-expand">';
+      html += '<div class="card-desc">' + esc(n.desc || "No description available.") + '</div>';
+      html += '<div class="card-foot">';
+      html += '<span class="card-src">' + esc(n.src) + '</span>';
+      html += '<a class="card-link" href="' + esc(n.link) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read article →</a>';
+      html += '</div></div>';
+    }
+
+    html += '<div class="card-toggle">' + (open ? '▲ Less' : '▼ More') + '</div>';
+    html += '</div></div>';
+  });
+  html += '</div>';
+
+  html += '<div class="footer">Powered by Google News RSS • Auto-refreshes every 10 min</div>';
+  html += '</div>'; // end main
+
+  document.getElementById("app").innerHTML = html;
+}
+
+/* ===== GLOBAL HANDLERS ===== */
+window._setDay = function(d) { selDay = (selDay === d) ? null : d; expanded = null; render(); };
+window._setCat = function(c) { selCat = c; expanded = null; render(); };
+window._toggle = function(k) { expanded = (expanded === k) ? null : k; render(); };
+
+/* ===== INIT ===== */
+render();
 loadNews();
-refreshInterval = setInterval(loadNews, REFRESH);
-cdInterval = setInterval(() => { cd = Math.max(0, cd-1); document.getElementById("cdLabel").textContent = `${Math.floor(cd/60)}:${String(cd%60).padStart(2,"0")}`; }, 1000);
+setInterval(loadNews, REFRESH_MS);
+setInterval(function() {
+  countdown = Math.max(0, countdown - 1);
+  var el = document.querySelector(".hdr-right span:nth-child(2)");
+  if (el) el.textContent = Math.floor(countdown/60) + ":" + String(countdown%60).padStart(2,"0");
+}, 1000);
 </script>
 </body>
 </html>

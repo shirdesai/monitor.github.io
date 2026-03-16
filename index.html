@@ -1,277 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UAE News Monitor</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: #0d1117;
-      color: #e6edf3;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      background: #161b22;
-      padding: 16px 24px;
-      border-bottom: 1px solid #30363d;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    header h1 {
-      font-size: 1.2rem;
-      color: #58a6ff;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    .live-dot {
-      width: 10px;
-      height: 10px;
-      background: #f85149;
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .ticker-wrap {
-      background: #161b22;
-      border-top: 2px solid #58a6ff;
-      border-bottom: 1px solid #30363d;
-      padding: 10px 0;
-      overflow: hidden;
-      white-space: nowrap;
-      position: relative;
-    }
-
-    .ticker-label {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      background: #58a6ff;
-      color: #0d1117;
-      font-weight: 700;
-      font-size: 0.75rem;
-      padding: 0 10px;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      z-index: 2;
-    }
-
-    .ticker-outer {
-      margin-left: 60px;
-      overflow: hidden;
-    }
-
-    .ticker-track {
-      display: inline-block;
-      animation: ticker-scroll 60s linear infinite;
-    }
-
-    .ticker-track:hover { animation-play-state: paused; }
-
-    @keyframes ticker-scroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    .ticker-item {
-      display: inline-block;
-      margin-right: 60px;
-      font-size: 0.85rem;
-      color: #e6edf3;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    .ticker-item:hover { color: #58a6ff; }
-
-    .ticker-item::before {
-      content: '◆';
-      color: #58a6ff;
-      margin-right: 8px;
-      font-size: 0.6rem;
-    }
-
-    .fallback-banner {
-      background: #21262d;
-      border-bottom: 1px solid #f0883e;
-      padding: 6px 24px;
-      font-size: 0.78rem;
-      color: #f0883e;
-      display: none;
-    }
-
-    .status {
-      text-align: center;
-      padding: 40px;
-      color: #8b949e;
-      font-size: 0.9rem;
-    }
-
-    .news-grid {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-      align-content: start;
-    }
-
-    .news-card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 16px;
-      transition: border-color 0.2s, transform 0.2s;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    .news-card:hover {
-      border-color: #58a6ff;
-      transform: translateY(-2px);
-    }
-
-    .news-card .date {
-      font-size: 0.72rem;
-      color: #8b949e;
-      margin-bottom: 8px;
-    }
-
-    .news-card h3 {
-      font-size: 0.9rem;
-      line-height: 1.5;
-      color: #e6edf3;
-    }
-
-    footer {
-      text-align: center;
-      padding: 10px;
-      font-size: 0.72rem;
-      color: #8b949e;
-      border-top: 1px solid #30363d;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UAE News Monitor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{height:0;width:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#05080f;color:#e2e8f0;min-height:100vh}
+.wrap{max-width:480px;margin:0 auto}
+.hdr{position:sticky;top:0;z-index:50;background:#05080fee;backdrop-filter:blur(12px);padding:14px 16px 0;border-bottom:1px solid #111827}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px}
+.logo span{font-size:16px;font-weight:700;letter-spacing:.5px}
+.hdr-r{display:flex;align-items:center;gap:8px;font-size:10px;color:#475569}
+.hdr-r button{background:none;border:1px solid #1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer}
+.days{display:flex;gap:4px;padding-bottom:12px}
+.day-btn{flex:1 1 0;border:none;border-radius:10px;padding:6px 2px;cursor:pointer;text-align:center;min-width:0;transition:all .15s}
+.day-btn .dw{font-size:9px;font-weight:600}
+.day-btn .dd{font-size:15px;font-weight:700}
+.day-btn .dot-sm{width:4px;height:4px;border-radius:2px;margin:3px auto 0}
+.body{padding:12px 16px}
+.stats{display:flex;gap:8px;margin-bottom:14px}
+.stat{flex:1 1 0;background:#0c1117;border:1px solid #151d28;border-radius:10px;padding:10px 8px;text-align:center}
+.stat .v{font-size:18px;font-weight:700}
+.stat .l{font-size:9px;color:#475569;margin-top:1px}
+.pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:14px;-webkit-overflow-scrolling:touch}
+.pill{border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;border-width:1px;border-style:solid}
+.cards{display:flex;flex-direction:column;gap:10px}
+.card{background:#0c1117;border:1px solid #151d28;border-radius:14px;overflow:hidden;cursor:pointer}
+.card.urg{border-color:rgba(239,68,68,.2)}
+.card-in{padding:14px 16px}
+.card-tags{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px}
+.urg-tag{font-size:10px;font-weight:700;color:#ef4444}
+.card-time{margin-left:auto;font-size:11px;color:#475569}
+.card-title{font-size:15px;font-weight:600;color:#f1f5f9;line-height:1.45}
+.card-body{margin-top:12px;padding-top:12px;border-top:1px solid #151d28}
+.card-desc{font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:8px}
+.card-meta{display:flex;justify-content:space-between;align-items:center}
+.card-src{font-size:11px;color:#374151}
+.card-link{font-size:11px;color:#3b82f6;text-decoration:none;font-weight:600}
+.card-more{text-align:right;margin-top:6px;font-size:10px;color:#334155}
+.center{text-align:center;padding:80px 20px}
+.spinner{width:40px;height:40px;border-radius:50%;border:3px solid #1e293b;border-top-color:#3b82f6;margin:0 auto 20px;animation:spin 1s linear infinite}
+.foot{text-align:center;padding:24px 0 32px;color:#1e293b;font-size:10px}
+.warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#fbbf24}
+.err-btn{background:#3b82f6;color:#fff;border:none;padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
-
-  <header>
-    <div class="live-dot"></div>
-    <h1>🇦🇪 UAE News Monitor</h1>
-  </header>
-
-  <div class="ticker-wrap">
-    <div class="ticker-label">LIVE</div>
-    <div class="ticker-outer">
-      <span class="ticker-track" id="tickerTrack">
-        <span class="ticker-item">Loading news...</span>
-      </span>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="logo"><div class="dot" id="statusDot"></div><span>UAE NEWS</span></div>
+      <div class="hdr-r">
+        <span id="timeLabel"></span>
+        <span id="cdLabel"></span>
+        <button id="refreshBtn" onclick="loadNews()" style="display:none">↻</button>
+      </div>
     </div>
+    <div class="days" id="daysBar"></div>
   </div>
-
-  <div class="fallback-banner" id="fallbackBanner">
-    ⚠️ No UAE-specific stories right now — showing latest Middle East news from Al Jazeera
+  <div class="body">
+    <div id="content"></div>
+    <div class="foot">Powered by Google News RSS via rss2json • Auto-refreshes every 10 min</div>
   </div>
-
-  <div class="news-grid" id="newsGrid">
-    <div class="status">⏳ Fetching latest news from Al Jazeera...</div>
-  </div>
-
-  <footer>Source: Al Jazeera RSS &nbsp;|&nbsp; Auto-refreshes every 10 minutes</footer>
+</div>
 
 <script>
-  const UAE_KEYWORDS = [
-    'uae', 'dubai', 'abu dhabi', 'emirates', 'emirati',
-    'sharjah', 'ajman', 'fujairah', 'ras al khaimah', 'umm al quwain'
-  ];
+const FEEDS = [
+  "https://news.google.com/rss/search?q=UAE+news+today&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Dubai+news&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+Iran+conflict&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+flights+airport+DXB&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Abu+Dhabi+news+today&hl=en&gl=AE&ceid=AE:en",
+];
 
-  const RSS_URL = 'https://www.aljazeera.com/xml/rss/all.xml';
-  const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
+// Two RSS proxy services for redundancy
+const PROXIES = [
+  url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+];
 
-  function isUAE(text) {
-    const t = (text || '').toLowerCase();
-    return UAE_KEYWORDS.some(k => t.includes(k));
+const REFRESH = 600000;
+const CAT_RULES = [
+  {c:"CONFLICT",k:["iran","war","strike","attack","bomb","kharg","hormuz","military","weapon","retaliat"]},
+  {c:"FLIGHTS",k:["flight","airport","dxb","airline","emirates","etihad","aviation","airspace","cancel"]},
+  {c:"DEFENCE",k:["intercept","missile","drone","air defence","air defense","ballistic","irgc","shield"]},
+  {c:"SAFETY",k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger"]},
+  {c:"DIPLOMACY",k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty"]},
+  {c:"ECONOMY",k:["oil price","economic","market","trade","port","shipping","crude","stock","barrel"]},
+  {c:"COMMUNITY",k:["expat","resident","school","remote","daily life","ramadan","community"]},
+];
+
+const COLORS = {
+  CONFLICT:{bg:"rgba(244,63,94,.12)",tx:"#fda4af",bd:"#f43f5e"},
+  FLIGHTS:{bg:"rgba(59,130,246,.12)",tx:"#93c5fd",bd:"#3b82f6"},
+  DEFENCE:{bg:"rgba(34,197,94,.12)",tx:"#86efac",bd:"#22c55e"},
+  SAFETY:{bg:"rgba(245,158,11,.12)",tx:"#fcd34d",bd:"#f59e0b"},
+  DIPLOMACY:{bg:"rgba(168,85,247,.12)",tx:"#d8b4fe",bd:"#a855f7"},
+  ECONOMY:{bg:"rgba(234,179,8,.12)",tx:"#fde047",bd:"#eab308"},
+  COMMUNITY:{bg:"rgba(99,102,241,.12)",tx:"#a5b4fc",bd:"#6366f1"},
+  GENERAL:{bg:"rgba(148,163,184,.08)",tx:"#94a3b8",bd:"#64748b"},
+};
+
+let news = [], status = "loading", lastUp = null, cd = REFRESH/1000;
+let selCat = "ALL", selDay = null, expanded = null;
+let cdInterval, refreshInterval;
+
+function categorize(text) {
+  const t = text.toLowerCase();
+  for (const r of CAT_RULES) { if (r.k.some(k => t.includes(k))) return r.c; }
+  return "GENERAL";
+}
+
+function isUrgent(title) {
+  const t = title.toLowerCase();
+  return ["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy"].some(k => t.includes(k));
+}
+
+function stripHTML(s) {
+  return (s||"").replace(/<[^>]*>/g,"").replace(/&[^;]+;/g," ").replace(/\s+/g," ").trim();
+}
+
+function getLast7Days() {
+  const r = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    r.push({key:d.toISOString().slice(0,10), d:d.getDate(), wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()], today:i===0});
   }
+  return r;
+}
 
-  function formatDate(str) {
-    const d = new Date(str);
-    return isNaN(d) ? str : d.toLocaleString('en-AE', {
-      day: 'numeric', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
-  }
+// Parse rss2json response
+function parseRss2Json(data) {
+  if (data.status !== "ok" || !data.items) return [];
+  return data.items.map(item => {
+    const pub = new Date(item.pubDate);
+    return {
+      title: (item.title||"").trim(),
+      desc: stripHTML(item.description).slice(0,300),
+      link: item.link||"#",
+      src: (item.author||"").replace(/^www\./,""),
+      pub, date: pub.toISOString().slice(0,10),
+      time: pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),
+      ts: pub.getTime(),
+    };
+  });
+}
 
-  async function fetchNews() {
-    try {
-      const res  = await fetch(API_URL);
-      if (!res.ok) throw new Error('fetch failed');
+// Parse raw RSS XML
+function parseRawXML(text) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, "text/xml");
+  const items = doc.querySelectorAll("item");
+  return Array.from(items).map(item => {
+    const title = (item.querySelector("title")?.textContent||"").trim();
+    const desc = stripHTML(item.querySelector("description")?.textContent||"").slice(0,300);
+    const link = item.querySelector("link")?.textContent||"#";
+    const src = item.querySelector("source")?.textContent||"";
+    const pub = new Date(item.querySelector("pubDate")?.textContent||"");
+    return {
+      title, desc, link, src, pub,
+      date: pub.toISOString().slice(0,10),
+      time: pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),
+      ts: pub.getTime(),
+    };
+  });
+}
+
+async function fetchFeed(feedUrl) {
+  // Try rss2json first
+  try {
+    const res = await fetch(PROXIES[0](feedUrl));
+    if (res.ok) {
       const data = await res.json();
-      if (!data.items || data.items.length === 0) throw new Error('no items');
+      const items = parseRss2Json(data);
+      if (items.length > 0) return items;
+    }
+  } catch(e) { console.warn("rss2json failed:", e.message); }
 
-      const items = data.items;
+  // Fallback: allorigins proxy + raw XML parsing
+  try {
+    const res = await fetch(PROXIES[1](feedUrl));
+    if (res.ok) {
+      const text = await res.text();
+      const items = parseRawXML(text);
+      if (items.length > 0) return items;
+    }
+  } catch(e) { console.warn("allorigins failed:", e.message); }
 
-      const uaeItems = items.filter(item =>
-        isUAE(item.title) || isUAE(item.description)
-      );
+  return [];
+}
 
-      const banner = document.getElementById('fallbackBanner');
+async function fetchAllFeeds() {
+  const results = [];
+  const seen = new Set();
+  const now = new Date();
+  const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate()-7);
 
-      if (uaeItems.length > 0) {
-        banner.style.display = 'none';
-        renderCards(uaeItems);
-        renderTicker(uaeItems);
-      } else {
-        banner.style.display = 'block';
-        renderCards(items.slice(0, 20));
-        renderTicker(items.slice(0, 20));
-      }
+  const allResults = await Promise.allSettled(FEEDS.map(f => fetchFeed(f)));
 
-    } catch (e) {
-      document.getElementById('newsGrid').innerHTML =
-        '<div class="status">⚠️ Could not load news. Will retry in 10 minutes.</div>';
-      document.getElementById('tickerTrack').innerHTML =
-        '<span class="ticker-item">Could not load news — retrying soon</span>';
+  for (const result of allResults) {
+    if (result.status !== "fulfilled") continue;
+    for (const item of result.value) {
+      const key = item.title.toLowerCase().slice(0,60);
+      if (!key || seen.has(key)) continue;
+      if (item.pub < weekAgo || isNaN(item.ts)) continue;
+      seen.add(key);
+
+      const cat = categorize(item.title + " " + item.desc);
+      results.push({ ...item, cat, urgent: isUrgent(item.title) });
     }
   }
 
-  function renderCards(items) {
-    const grid = document.getElementById('newsGrid');
-    grid.innerHTML = items.map(item => {
-      return `
-        <a class="news-card" href="${item.link}" target="_blank" rel="noopener">
-          <div class="date">${formatDate(item.pubDate)}</div>
-          <h3>${item.title}</h3>
-        </a>`;
-    }).join('');
+  results.sort((a,b) => b.ts - a.ts);
+  return results;
+}
+
+async function loadNews() {
+  if (news.length === 0) status = "loading";
+  render();
+
+  try {
+    const items = await fetchAllFeeds();
+    if (items.length === 0) throw new Error("No articles found — feeds may be temporarily unavailable. Will retry automatically.");
+    news = items;
+    lastUp = new Date();
+    cd = REFRESH / 1000;
+    status = "ready";
+  } catch(e) {
+    console.error("Feed error:", e.message);
+    if (news.length > 0) {
+      cd = REFRESH / 1000;
+      status = "ready";
+    } else {
+      status = "error";
+    }
+  }
+  render();
+}
+
+function render() {
+  const days = getLast7Days();
+  const dot = document.getElementById("statusDot");
+  dot.style.background = status==="loading"?"#facc15":status==="ready"?"#22c55e":"#ef4444";
+  dot.style.boxShadow = `0 0 6px ${status==="loading"?"#facc1544":status==="ready"?"#22c55e44":"#ef444444"}`;
+
+  const mn = Math.floor(cd/60), sc = cd%60;
+  document.getElementById("timeLabel").textContent = lastUp ? lastUp.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) : "";
+  document.getElementById("cdLabel").textContent = status==="loading"?"loading…":`${mn}:${String(sc).padStart(2,"0")}`;
+  document.getElementById("refreshBtn").style.display = status==="loading"?"none":"inline-block";
+
+  // Days bar
+  const daysBar = document.getElementById("daysBar");
+  if (news.length > 0) {
+    let dh = `<button class="day-btn" onclick="setDay(null)" style="background:${!selDay?'#3b82f6':'#111827'}">
+      <div class="dw" style="color:${!selDay?'#dbeafe':'#475569'}">ALL</div>
+      <div class="dd" style="color:${!selDay?'#fff':'#64748b'}">${news.length}</div></button>`;
+    for (const d of days) {
+      const ct = news.filter(n=>n.date===d.key).length;
+      const a = selDay===d.key;
+      dh += `<button class="day-btn" onclick="setDay('${d.key}')" style="background:${a?'#3b82f6':'#111827'};opacity:${ct?1:.3}">
+        <div class="dw" style="color:${a?'#dbeafe':'#475569'}">${d.today?"TODAY":d.wd}</div>
+        <div class="dd" style="color:${a?'#fff':'#e2e8f0'}">${d.d}</div>
+        ${ct>0?`<div class="dot-sm" style="background:${a?'#fff':'#3b82f6'}"></div>`:""}
+      </button>`;
+    }
+    daysBar.innerHTML = dh;
+  } else {
+    daysBar.innerHTML = "";
   }
 
-  function renderTicker(items) {
-    const track = document.getElementById('tickerTrack');
-    const html = [...items, ...items].map(item =>
-      `<span class="ticker-item" onclick="window.open('${item.link}','_blank')">${item.title}</span>`
-    ).join('');
-    track.innerHTML = html;
+  // Content
+  const el = document.getElementById("content");
+
+  if (status === "loading" && news.length === 0) {
+    el.innerHTML = `<div class="center"><div class="spinner"></div><div style="color:#94a3b8;font-size:14px;margin-bottom:4px">Loading UAE news feeds…</div><div style="color:#475569;font-size:11px">Fetching from multiple sources</div></div>`;
+    return;
   }
 
-  fetchNews();
-  setInterval(fetchNews, 10 * 60 * 1000);
+  if (status === "error" && news.length === 0) {
+    el.innerHTML = `<div class="center"><div style="font-size:28px;margin-bottom:12px">⚠️</div><div style="color:#f87171;font-size:13px;margin-bottom:16px">Could not load news feeds</div><button class="err-btn" onclick="loadNews()">Retry</button></div>`;
+    return;
+  }
+
+  const cats = ["ALL",...new Set(news.map(n=>n.cat))];
+  const list = news.filter(n=>(selCat==="ALL"||n.cat===selCat)&&(!selDay||n.date===selDay));
+  const urg = news.filter(n=>n.urgent).length;
+  const todayCount = news.filter(n=>n.date===days[0]?.key).length;
+
+  let h = "";
+
+  // Stats
+  h += `<div class="stats">
+    <div class="stat"><div class="v" style="color:#60a5fa">${news.length}</div><div class="l">stories</div></div>
+    <div class="stat"><div class="v" style="color:#f87171">${urg}</div><div class="l">urgent</div></div>
+    <div class="stat"><div class="v" style="color:#4ade80">${todayCount}</div><div class="l">today</div></div>
+  </div>`;
+
+  // Pills
+  h += `<div class="pills">`;
+  for (const f of cats) {
+    const a = selCat===f, c = COLORS[f]||COLORS.GENERAL;
+    h += `<button class="pill" onclick="setCat('${f}')" style="background:${a?c.bg:'transparent'};border-color:${a?c.bd:'#1e293b'};color:${a?c.tx:'#64748b'}">${f}</button>`;
+  }
+  h += `</div>`;
+
+  // Cards
+  h += `<div class="cards">`;
+  if (list.length === 0) {
+    h += `<div style="text-align:center;padding:40px 16px;color:#475569;font-size:13px">No stories match this filter.</div>`;
+  }
+  list.forEach((n,i) => {
+    const c = COLORS[n.cat]||COLORS.GENERAL;
+    const k = `${selCat}-${selDay}-${i}`;
+    const open = expanded===k;
+    h += `<div class="card${n.urgent?' urg':''}" onclick="toggle('${k}')">
+      <div class="card-in" style="border-left:3px solid ${c.bd}">
+        <div class="card-tags">
+          <span class="tag" style="background:${c.bg};color:${c.tx}">${n.cat}</span>
+          ${n.urgent?'<span class="urg-tag">URGENT</span>':''}
+          <span class="card-time">${n.time}</span>
+        </div>
+        <div class="card-title">${n.title}</div>
+        ${open?`<div class="card-body">
+          <div class="card-desc">${n.desc}</div>
+          <div class="card-meta">
+            <span class="card-src">${n.src}</span>
+            <a class="card-link" href="${n.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read article →</a>
+          </div>
+        </div>`:''}
+        <div class="card-more">${open?'▲ Less':'▼ More'}</div>
+      </div>
+    </div>`;
+  });
+  h += `</div>`;
+
+  el.innerHTML = h;
+}
+
+function setDay(d) { selDay = (selDay===d)?null:d; expanded=null; render(); }
+function setCat(c) { selCat = c; expanded=null; render(); }
+function toggle(k) { expanded = (expanded===k)?null:k; render(); }
+
+// Init
+loadNews();
+refreshInterval = setInterval(loadNews, REFRESH);
+cdInterval = setInterval(() => { cd = Math.max(0, cd-1); document.getElementById("cdLabel").textContent = `${Math.floor(cd/60)}:${String(cd%60).padStart(2,"0")}`; }, 1000);
 </script>
 </body>
 </html>

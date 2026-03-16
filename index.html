@@ -107,9 +107,13 @@ var FEEDS = [
   "https://news.google.com/rss/search?q=Strait+of+Hormuz+shipping&hl=en&gl=AE&ceid=AE:en",
   "https://news.google.com/rss/search?q=UAE+economy+oil+trade&hl=en&gl=AE&ceid=AE:en",
 ];
-var PROXY1 = function(u){return "https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(u)+"&count=25";};
-var PROXY2 = function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u);};
+var PROXIES = [
+  function(u){return "https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(u)+"&count=25";},
+  function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u);},
+  function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u);},
+];
 var REFRESH_MS = 600000;
+var debugErrors = [];
 
 /* Categories — ordered by priority */
 var RULES = [
@@ -178,11 +182,27 @@ function parseXML(text){
   }catch(e){return[];}
 }
 async function fetchOne(url){
-  try{var r=await fetch(PROXY1(url));if(r.ok){var d=await r.json();var it=parseR2J(d);if(it.length>0)return it;}}catch(e){}
-  try{var r2=await fetch(PROXY2(url));if(r2.ok){var t=await r2.text();var it2=parseXML(t);if(it2.length>0)return it2;}}catch(e){}
+  for(var p=0;p<PROXIES.length;p++){
+    try{
+      var purl=PROXIES[p](url);
+      var r=await fetch(purl);
+      if(!r.ok){debugErrors.push("Proxy"+p+" HTTP "+r.status);continue;}
+      var ct=r.headers.get("content-type")||"";
+      if(ct.indexOf("json")!==-1){
+        var d=await r.json();
+        var it=parseR2J(d);
+        if(it.length>0)return it;
+      }else{
+        var t=await r.text();
+        var it2=parseXML(t);
+        if(it2.length>0)return it2;
+      }
+    }catch(e){debugErrors.push("Proxy"+p+": "+e.message);}
+  }
   return[];
 }
 async function fetchAll(){
+  debugErrors=[];
   var results=[],seen={},now=Date.now(),ago=now-7*86400000;
   var settled=await Promise.allSettled(FEEDS.map(function(f){return fetchOne(f);}));
   settled.forEach(function(res){
@@ -300,7 +320,13 @@ function render(){
   if(state==="error"&&news.length===0){
     h+='<div class="err"><div style="font-size:32px;margin-bottom:16px">⚠️</div>';
     h+='<div style="color:#f87171;font-size:14px;margin-bottom:6px">Could not load news feeds</div>';
-    h+='<div style="color:#475569;font-size:12px;margin-bottom:24px">RSS proxies may be temporarily unavailable</div>';
+    h+='<div style="color:#475569;font-size:12px;margin-bottom:12px">All proxy services failed — try refreshing in a minute</div>';
+    if(debugErrors.length>0){
+      h+='<div style="text-align:left;background:#0c1117;border:1px solid #1e293b;border-radius:8px;padding:10px 14px;margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto">';
+      h+='<div style="font-size:10px;color:#64748b;margin-bottom:6px;font-weight:600">DEBUG LOG:</div>';
+      debugErrors.forEach(function(e){h+='<div style="font-size:10px;color:#94a3b8;margin-bottom:2px">• '+esc(e)+'</div>';});
+      h+='</div>';
+    }
     h+='<button class="errbtn" onclick="loadNews()">Retry</button></div></div>';
     document.getElementById("app").innerHTML=h;return;
   }

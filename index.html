@@ -215,6 +215,11 @@ async function fetchAll(){
       if(isNaN(pub.getTime())||pub.getTime()<ago)return;
       seen[key]=true;
       var desc=strip(item.description||"").slice(0,400);
+      var fullText=(title+" "+desc).toLowerCase();
+      var uaeKw=["uae","dubai","abu dhabi","emirates","sharjah","fujairah","ajman","ras al","umm al","dxb","etihad","khalifa","jebel ali","hormuz","gulf state","gulf region","gcc","ncema"];
+      var isUAE=false;
+      for(var u=0;u<uaeKw.length;u++){if(fullText.indexOf(uaeKw[u])!==-1){isUAE=true;break;}}
+      if(!isUAE)continue;
       results.push({title:title,desc:desc,link:item.link||"#",src:(item.author||"").replace(/^www\./,""),
         cat:classify(title+" "+desc),urgent:isUrgent(title),date:pub.toISOString().slice(0,10),
         time:pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),ts:pub.getTime()});

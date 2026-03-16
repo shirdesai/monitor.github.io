@@ -7,437 +7,377 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#05080f;color:#e2e8f0;min-height:100vh}
-.wrap{max-width:520px;margin:0 auto}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
 
 /* Header */
-.hdr{position:sticky;top:0;z-index:50;background:rgba(5,8,15,.95);backdrop-filter:blur(12px);padding:14px 16px 0;border-bottom:1px solid #111827}
-.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.hdr-left{display:flex;align-items:center;gap:8px}
-.hdr-left .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.hdr-left h1{font-size:17px;font-weight:700;letter-spacing:.5px}
-.hdr-right{display:flex;align-items:center;gap:8px;font-size:10px;color:#475569}
-.refresh-btn{background:none;border:1px solid #1e293b;color:#64748b;font-size:10px;padding:2px 8px;border-radius:8px;cursor:pointer}
-.refresh-btn:hover{border-color:#334155;color:#94a3b8}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(5,8,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid #111827;padding:16px 0 0}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-left .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite}
+.hdr-left h1{font-size:18px;font-weight:700;letter-spacing:.5px}
+.hdr-right{display:flex;align-items:center;gap:10px;font-size:11px;color:#475569}
+.rbtn{background:none;border:1px solid #1e293b;color:#64748b;font-size:11px;padding:4px 12px;border-radius:8px;cursor:pointer;transition:all .15s}
+.rbtn:hover{border-color:#334155;color:#94a3b8}
 
-/* Days strip */
-.days{display:flex;gap:4px;padding-bottom:12px}
-.dbtn{flex:1 1 0;background:#111827;border:none;border-radius:10px;padding:7px 2px;cursor:pointer;text-align:center;min-width:0;transition:background .15s,opacity .15s}
-.dbtn.active{background:#3b82f6}
-.dbtn .dw{font-size:9px;font-weight:600;color:#475569}
-.dbtn.active .dw{color:#dbeafe}
-.dbtn .dd{font-size:16px;font-weight:700;color:#e2e8f0;line-height:1.2}
-.dbtn.active .dd{color:#fff}
-.dbtn .ddot{width:4px;height:4px;border-radius:50%;background:#3b82f6;margin:3px auto 0}
-.dbtn.active .ddot{background:#fff}
+/* Days */
+.days{display:flex;gap:5px;padding-bottom:14px}
+.dbtn{flex:1 1 0;background:#0c1117;border:1px solid #151d28;border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center;min-width:0;transition:all .15s}
+.dbtn:hover{border-color:#1e293b}
+.dbtn.on{background:#3b82f6;border-color:#3b82f6}
+.dbtn .dw{font-size:9px;font-weight:600;color:#475569;text-transform:uppercase}
+.dbtn.on .dw{color:#dbeafe}
+.dbtn .dd{font-size:17px;font-weight:700;color:#cbd5e1;line-height:1.3}
+.dbtn.on .dd{color:#fff}
+.dbtn .dc{font-size:9px;color:#475569;margin-top:2px}
+.dbtn.on .dc{color:#bfdbfe}
 
-/* Body */
-.main{padding:12px 16px 24px}
+/* Main layout — two column on desktop */
+.main{padding:16px 0 32px}
+.top-bar{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.sidebar{flex:0 0 220px}
+.feed{flex:1;min-width:0}
 
-/* Stats row */
-.stats{display:flex;gap:8px;margin-bottom:14px}
-.sbox{flex:1;background:#0c1117;border:1px solid #151d28;border-radius:10px;padding:10px 8px;text-align:center}
-.sbox .sv{font-size:20px;font-weight:700;line-height:1}
-.sbox .sl{font-size:9px;color:#475569;margin-top:3px}
+@media(max-width:700px){
+  .top-bar{flex-direction:column}
+  .sidebar{flex:none}
+}
 
-/* Category pills */
-.pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:14px;-webkit-overflow-scrolling:touch}
-.pill{background:transparent;border:1px solid #1e293b;color:#64748b;border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
-.pill.on{background:var(--pbg);border-color:var(--pbd);color:var(--ptx)}
+/* Category sidebar / pills */
+.cat-list{display:flex;flex-direction:column;gap:4px}
+.cat-item{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-radius:10px;cursor:pointer;transition:all .15s;border:1px solid transparent;font-size:13px;font-weight:500}
+.cat-item:hover{background:rgba(255,255,255,.03)}
+.cat-item.on{border-color:var(--cbd);background:var(--cbg)}
+.cat-item .cname{display:flex;align-items:center;gap:8px}
+.cat-item .cdot{width:8px;height:8px;border-radius:50%}
+.cat-item .ccount{font-size:11px;font-weight:700;color:#475569;background:#111827;padding:2px 8px;border-radius:8px}
+.cat-item.on .ccount{color:var(--ctx);background:rgba(255,255,255,.08)}
 
-/* News cards */
+/* Mobile: horizontal pills */
+@media(max-width:700px){
+  .cat-list{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .cat-item{padding:7px 14px;white-space:nowrap;font-size:12px;border-radius:20px;flex-shrink:0}
+  .cat-item .ccount{display:none}
+}
+
+/* Cards */
 .cards{display:flex;flex-direction:column;gap:10px}
 .card{background:#0c1117;border:1px solid #151d28;border-radius:14px;cursor:pointer;overflow:hidden;transition:border-color .15s}
 .card:hover{border-color:#1e293b}
-.card.urgent{border-color:rgba(239,68,68,.25)}
-.card-inner{padding:14px 16px;border-left:3px solid var(--cbd,#64748b)}
-.card-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.card-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;background:var(--cbg);color:var(--ctx)}
-.card-urg{font-size:10px;font-weight:700;color:#ef4444}
-.card-time{margin-left:auto;font-size:11px;color:#475569}
-.card-title{font-size:15px;font-weight:600;color:#f1f5f9;line-height:1.45}
-.card-expand{margin-top:12px;padding-top:12px;border-top:1px solid #151d28;animation:fadeIn .2s}
-.card-desc{font-size:13px;color:#9ca3af;line-height:1.7;margin-bottom:10px}
-.card-foot{display:flex;justify-content:space-between;align-items:center}
-.card-src{font-size:11px;color:#374151}
-.card-link{font-size:11px;color:#3b82f6;text-decoration:none;font-weight:600}
-.card-link:hover{text-decoration:underline}
-.card-toggle{text-align:right;margin-top:6px;font-size:10px;color:#334155}
+.card.urg{border-color:rgba(239,68,68,.25)}
+.cin{padding:16px 18px;border-left:3px solid var(--cbd,#64748b)}
+.ctop{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.ctag{font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;background:var(--cbg);color:var(--ctx)}
+.curg{font-size:10px;font-weight:700;color:#ef4444}
+.ctime{margin-left:auto;font-size:11px;color:#475569}
+.ctitle{font-size:15px;font-weight:600;color:#f1f5f9;line-height:1.5}
+.cexp{margin-top:12px;padding-top:12px;border-top:1px solid #151d28;animation:fadeIn .2s}
+.cdesc{font-size:13px;color:#9ca3af;line-height:1.75;margin-bottom:10px}
+.cfoot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.csrc{font-size:11px;color:#374151}
+.clink{font-size:11px;color:#3b82f6;text-decoration:none;font-weight:600}
+.clink:hover{text-decoration:underline}
+.cmore{text-align:right;margin-top:8px;font-size:10px;color:#334155}
 
 /* States */
-.loading-box{text-align:center;padding:80px 20px}
-.spinner{width:40px;height:40px;border-radius:50%;border:3px solid #1e293b;border-top-color:#3b82f6;margin:0 auto 20px;animation:spin 1s linear infinite}
-.error-box{text-align:center;padding:60px 20px}
-.retry-btn{background:#3b82f6;color:#fff;border:none;padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
-.retry-btn:hover{background:#2563eb}
-.soft-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#fbbf24}
-.empty{text-align:center;padding:40px 16px;color:#475569;font-size:13px}
-.footer{text-align:center;padding:20px 0 32px;color:#1e293b;font-size:10px}
+.ld{text-align:center;padding:100px 20px}
+.spin{width:44px;height:44px;border-radius:50%;border:3px solid #1e293b;border-top-color:#3b82f6;margin:0 auto 24px;animation:spin 1s linear infinite}
+.err{text-align:center;padding:80px 20px}
+.errbtn{background:#3b82f6;color:#fff;border:none;padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+.errbtn:hover{background:#2563eb}
+.swarn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:8px 14px;margin-bottom:14px;font-size:11px;color:#fbbf24}
+.empty{text-align:center;padding:50px 16px;color:#475569;font-size:13px}
+.foot{text-align:center;padding:24px 0;color:#1e293b;font-size:10px;border-top:1px solid #0c1117;margin-top:20px}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 
 <script>
-/* ===== CONFIG ===== */
-const FEEDS = [
+var FEEDS = [
   "https://news.google.com/rss/search?q=UAE+news&hl=en&gl=AE&ceid=AE:en",
   "https://news.google.com/rss/search?q=Dubai+news+today&hl=en&gl=AE&ceid=AE:en",
   "https://news.google.com/rss/search?q=UAE+Iran+war+2026&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+flights+airport&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+flights+airport+DXB&hl=en&gl=AE&ceid=AE:en",
   "https://news.google.com/rss/search?q=Abu+Dhabi+news&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+safety+alert&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Strait+of+Hormuz&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+safety+missile+drone&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Strait+of+Hormuz+shipping&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+economy+oil+trade&hl=en&gl=AE&ceid=AE:en",
 ];
-const PROXY = url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=20`;
-const PROXY2 = url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-const REFRESH_MS = 600000;
+var PROXY1 = function(u){return "https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(u)+"&count=25";};
+var PROXY2 = function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u);};
+var REFRESH_MS = 600000;
 
-/* ===== CATEGORIZATION ===== */
-const RULES = [
-  { c: "CONFLICT", k: ["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","weapon","military operation"] },
-  { c: "FLIGHTS", k: ["flight","airport","dxb","airline","emirates airline","etihad","aviation","airspace","cancel","passenger"] },
-  { c: "DEFENCE", k: ["intercept","missile","drone","air defen","ballistic","irgc","shield","air force","navy","warship"] },
-  { c: "SAFETY", k: ["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect"] },
-  { c: "DIPLOMACY", k: ["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiate"] },
-  { c: "ECONOMY", k: ["oil price","economic","market","trade","port","shipping","crude","stock","barrel","fuel"] },
-  { c: "COMMUNITY", k: ["expat","resident","school","remote","daily life","ramadan","community","citizen"] },
+/* Categories — ordered by priority */
+var RULES = [
+  {c:"BREAKING",  k:["breaking","just in","flash"]},
+  {c:"MILITARY",  k:["military","troops","warship","navy","air force","bomber","airstrike","pentagon","centcom","army","marine"]},
+  {c:"DEFENCE",   k:["intercept","missile","drone","air defen","ballistic","irgc","shield","radar","patriot"]},
+  {c:"FLIGHTS",   k:["flight","airport","dxb","airline","emirates airline","etihad","aviation","airspace","cancel","passenger","grounded"]},
+  {c:"SAFETY",    k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect","civilian"]},
+  {c:"CONFLICT",  k:["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","weapon","aggression","tension"]},
+  {c:"DIPLOMACY", k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiat","sanction"]},
+  {c:"ECONOMY",   k:["oil price","economic","market","trade","port","shipping","crude","stock","barrel","fuel","refinery","tanker"]},
+  {c:"COMMUNITY", k:["expat","resident","school","remote","daily life","ramadan","community","citizen","worker","visa"]},
 ];
-const COLORS = {
-  CONFLICT: { bg:"rgba(244,63,94,.12)", tx:"#fda4af", bd:"#f43f5e" },
-  FLIGHTS:  { bg:"rgba(59,130,246,.12)", tx:"#93c5fd", bd:"#3b82f6" },
-  DEFENCE:  { bg:"rgba(34,197,94,.12)", tx:"#86efac", bd:"#22c55e" },
-  SAFETY:   { bg:"rgba(245,158,11,.12)", tx:"#fcd34d", bd:"#f59e0b" },
-  DIPLOMACY:{ bg:"rgba(168,85,247,.12)", tx:"#d8b4fe", bd:"#a855f7" },
-  ECONOMY:  { bg:"rgba(234,179,8,.12)", tx:"#fde047", bd:"#eab308" },
-  COMMUNITY:{ bg:"rgba(99,102,241,.12)", tx:"#a5b4fc", bd:"#6366f1" },
-  GENERAL:  { bg:"rgba(148,163,184,.08)",tx:"#94a3b8", bd:"#64748b" },
+
+var COLORS = {
+  BREAKING: {bg:"rgba(239,68,68,.12)", tx:"#f87171",  bd:"#ef4444"},
+  MILITARY: {bg:"rgba(251,146,60,.12)", tx:"#fdba74",  bd:"#f97316"},
+  DEFENCE:  {bg:"rgba(34,197,94,.12)",  tx:"#86efac",  bd:"#22c55e"},
+  FLIGHTS:  {bg:"rgba(59,130,246,.12)", tx:"#93c5fd",  bd:"#3b82f6"},
+  SAFETY:   {bg:"rgba(245,158,11,.12)", tx:"#fcd34d",  bd:"#f59e0b"},
+  CONFLICT: {bg:"rgba(244,63,94,.12)",  tx:"#fda4af",  bd:"#f43f5e"},
+  DIPLOMACY:{bg:"rgba(168,85,247,.12)", tx:"#d8b4fe",  bd:"#a855f7"},
+  ECONOMY:  {bg:"rgba(234,179,8,.12)",  tx:"#fde047",  bd:"#eab308"},
+  COMMUNITY:{bg:"rgba(99,102,241,.12)", tx:"#a5b4fc",  bd:"#6366f1"},
+  GENERAL:  {bg:"rgba(148,163,184,.08)",tx:"#94a3b8",  bd:"#64748b"},
 };
 
-function classify(text) {
+/* Ordered display categories */
+var CAT_ORDER = ["BREAKING","MILITARY","DEFENCE","CONFLICT","SAFETY","FLIGHTS","DIPLOMACY","ECONOMY","COMMUNITY","GENERAL"];
+
+function classify(text){
   var t = text.toLowerCase();
-  for (var i = 0; i < RULES.length; i++) {
-    for (var j = 0; j < RULES[i].k.length; j++) {
-      if (t.indexOf(RULES[i].k[j]) !== -1) return RULES[i].c;
+  for(var i=0;i<RULES.length;i++){
+    for(var j=0;j<RULES[i].k.length;j++){
+      if(t.indexOf(RULES[i].k[j])!==-1)return RULES[i].c;
     }
   }
   return "GENERAL";
 }
-function isUrgent(title) {
-  var t = title.toLowerCase();
-  var kws = ["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy","fire"];
-  for (var i = 0; i < kws.length; i++) { if (t.indexOf(kws[i]) !== -1) return true; }
+function isUrgent(title){
+  var t=title.toLowerCase();
+  var kw=["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy","fire","explosion"];
+  for(var i=0;i<kw.length;i++){if(t.indexOf(kw[i])!==-1)return true;}
   return false;
 }
-function strip(s) { return (s || "").replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim(); }
-function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function strip(s){return(s||"").replace(/<[^>]*>/g,"").replace(/&[^;]+;/g," ").replace(/\s+/g," ").trim();}
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
 
-/* ===== STATE ===== */
-var news = [];
-var state = "loading"; // loading | ready | error
-var lastUp = null;
-var countdown = REFRESH_MS / 1000;
-var selCat = "ALL";
-var selDay = null;
-var expanded = null;
-var softError = "";
+/* State */
+var news=[], state="loading", lastUp=null, countdown=REFRESH_MS/1000;
+var selCat="ALL", selDay=null, expanded=null, softError="";
 
-/* ===== FEED FETCHING ===== */
-function parseRss2Json(data) {
-  if (!data || data.status !== "ok" || !Array.isArray(data.items)) return [];
+/* Feed fetching */
+function parseR2J(data){
+  if(!data||data.status!=="ok"||!Array.isArray(data.items))return[];
   return data.items;
 }
-
-function parseXML(text) {
-  try {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(text, "text/xml");
-    var items = doc.querySelectorAll("item");
-    var results = [];
-    items.forEach(function(item) {
-      results.push({
-        title: (item.querySelector("title") || {}).textContent || "",
-        description: (item.querySelector("description") || {}).textContent || "",
-        link: (item.querySelector("link") || {}).textContent || "#",
-        author: (item.querySelector("source") || {}).textContent || "",
-        pubDate: (item.querySelector("pubDate") || {}).textContent || "",
-      });
-    });
-    return results;
-  } catch(e) { return []; }
+function parseXML(text){
+  try{
+    var p=new DOMParser(),doc=p.parseFromString(text,"text/xml"),items=doc.querySelectorAll("item"),r=[];
+    items.forEach(function(it){
+      r.push({title:(it.querySelector("title")||{}).textContent||"",description:(it.querySelector("description")||{}).textContent||"",
+        link:(it.querySelector("link")||{}).textContent||"#",author:(it.querySelector("source")||{}).textContent||"",
+        pubDate:(it.querySelector("pubDate")||{}).textContent||""});
+    });return r;
+  }catch(e){return[];}
 }
-
-async function fetchOneFeed(feedUrl) {
-  // Try proxy 1
-  try {
-    var res = await fetch(PROXY(feedUrl));
-    if (res.ok) {
-      var data = await res.json();
-      var items = parseRss2Json(data);
-      if (items.length > 0) return items;
-    }
-  } catch(e) { /* fallthrough */ }
-
-  // Try proxy 2
-  try {
-    var res2 = await fetch(PROXY2(feedUrl));
-    if (res2.ok) {
-      var text = await res2.text();
-      var items2 = parseXML(text);
-      if (items2.length > 0) return items2;
-    }
-  } catch(e) { /* fallthrough */ }
-
-  return [];
+async function fetchOne(url){
+  try{var r=await fetch(PROXY1(url));if(r.ok){var d=await r.json();var it=parseR2J(d);if(it.length>0)return it;}}catch(e){}
+  try{var r2=await fetch(PROXY2(url));if(r2.ok){var t=await r2.text();var it2=parseXML(t);if(it2.length>0)return it2;}}catch(e){}
+  return[];
 }
-
-async function fetchAllFeeds() {
-  var results = [];
-  var seen = {};
-  var now = Date.now();
-  var weekAgo = now - 7 * 86400000;
-
-  var promises = FEEDS.map(function(f) { return fetchOneFeed(f); });
-  var settled = await Promise.allSettled(promises);
-
-  settled.forEach(function(res) {
-    if (res.status !== "fulfilled") return;
-    res.value.forEach(function(item) {
-      var title = (item.title || "").trim();
-      var key = title.toLowerCase().slice(0, 50);
-      if (!key || seen[key]) return;
-
-      var pub = new Date(item.pubDate);
-      if (isNaN(pub.getTime()) || pub.getTime() < weekAgo) return;
-      seen[key] = true;
-
-      var desc = strip(item.description || "").slice(0, 350);
-      var cat = classify(title + " " + desc);
-
-      results.push({
-        title: title,
-        desc: desc,
-        link: item.link || "#",
-        src: (item.author || "").replace(/^www\./, ""),
-        cat: cat,
-        urgent: isUrgent(title),
-        date: pub.toISOString().slice(0, 10),
-        time: pub.toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
-        ts: pub.getTime(),
-      });
+async function fetchAll(){
+  var results=[],seen={},now=Date.now(),ago=now-7*86400000;
+  var settled=await Promise.allSettled(FEEDS.map(function(f){return fetchOne(f);}));
+  settled.forEach(function(res){
+    if(res.status!=="fulfilled")return;
+    res.value.forEach(function(item){
+      var title=(item.title||"").trim();
+      var key=title.toLowerCase().slice(0,50);
+      if(!key||seen[key])return;
+      var pub=new Date(item.pubDate);
+      if(isNaN(pub.getTime())||pub.getTime()<ago)return;
+      seen[key]=true;
+      var desc=strip(item.description||"").slice(0,400);
+      results.push({title:title,desc:desc,link:item.link||"#",src:(item.author||"").replace(/^www\./,""),
+        cat:classify(title+" "+desc),urgent:isUrgent(title),date:pub.toISOString().slice(0,10),
+        time:pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),ts:pub.getTime()});
     });
   });
-
-  results.sort(function(a, b) { return b.ts - a.ts; });
+  results.sort(function(a,b){return b.ts-a.ts;});
   return results;
 }
 
-/* ===== LOAD ===== */
-async function loadNews() {
-  if (news.length === 0) { state = "loading"; }
-  softError = "";
-  render();
-
-  try {
-    var items = await fetchAllFeeds();
-    if (items.length === 0) throw new Error("No articles returned");
-    news = items;
-    lastUp = new Date();
-    countdown = REFRESH_MS / 1000;
-    state = "ready";
-    softError = "";
-  } catch(e) {
-    if (news.length > 0) {
-      softError = "Refresh failed — showing last data. Will retry.";
-      countdown = REFRESH_MS / 1000;
-    } else {
-      state = "error";
-    }
+async function loadNews(){
+  if(news.length===0)state="loading";
+  softError="";render();
+  try{
+    var items=await fetchAll();
+    if(items.length===0)throw new Error("No articles found");
+    news=items;lastUp=new Date();countdown=REFRESH_MS/1000;state="ready";softError="";
+  }catch(e){
+    if(news.length>0){softError="Refresh failed — showing last data.";countdown=REFRESH_MS/1000;}
+    else state="error";
   }
   render();
 }
 
-/* ===== HELPERS ===== */
-function getLast7() {
-  var r = [];
-  for (var i = 0; i < 7; i++) {
-    var d = new Date(); d.setDate(d.getDate() - i);
-    r.push({
-      key: d.toISOString().slice(0, 10),
-      d: d.getDate(),
-      wd: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],
-      today: i === 0
-    });
-  }
+function getLast7(){
+  var r=[];for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-i);
+    r.push({key:d.toISOString().slice(0,10),d:d.getDate(),wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],today:i===0});}
   return r;
 }
 
-/* ===== RENDER ===== */
-function render() {
-  var days = getLast7();
-  var mn = Math.floor(countdown / 60);
-  var sc = countdown % 60;
-  var timeStr = lastUp ? lastUp.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) : "";
-  var dotColor = state === "loading" ? "#facc15" : state === "ready" ? "#22c55e" : "#ef4444";
-  var cdText = state === "loading" ? "loading…" : mn + ":" + String(sc).padStart(2, "0");
+/* Build ordered categories with counts */
+function getCats(items){
+  var counts={};
+  items.forEach(function(n){counts[n.cat]=(counts[n.cat]||0)+1;});
+  var result=[];
+  CAT_ORDER.forEach(function(c){if(counts[c])result.push({c:c,n:counts[c]});});
+  return result;
+}
 
-  // Filter
-  var filtered = [];
-  for (var i = 0; i < news.length; i++) {
-    var n = news[i];
-    if (selCat !== "ALL" && n.cat !== selCat) continue;
-    if (selDay && n.date !== selDay) continue;
+function render(){
+  var days=getLast7();
+  var mn=Math.floor(countdown/60),sc=countdown%60;
+  var timeStr=lastUp?lastUp.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"";
+  var dotColor=state==="loading"?"#facc15":state==="ready"?"#22c55e":"#ef4444";
+  var cdText=state==="loading"?"loading…":mn+":"+String(sc).padStart(2,"0");
+
+  /* Apply filters */
+  var filtered=[];
+  for(var i=0;i<news.length;i++){
+    var n=news[i];
+    if(selCat!=="ALL"&&n.cat!==selCat)continue;
+    if(selDay&&n.date!==selDay)continue;
     filtered.push(n);
   }
 
-  var cats = ["ALL"];
-  var catSet = {};
-  news.forEach(function(n) { if (!catSet[n.cat]) { catSet[n.cat] = true; cats.push(n.cat); } });
+  /* Category counts — scoped to selected day */
+  var dayScoped=selDay?news.filter(function(n){return n.date===selDay;}):news;
+  var catData=getCats(dayScoped);
 
-  var urgCount = 0;
-  var todayCount = 0;
-  news.forEach(function(n) { if (n.urgent) urgCount++; if (days[0] && n.date === days[0].key) todayCount++; });
+  var h='';
 
-  var html = '';
+  /* === HEADER === */
+  h+='<div class="hdr"><div style="max-width:900px;margin:0 auto;padding:0 16px">';
+  h+='<div class="hdr-row">';
+  h+='<div class="hdr-left"><div class="dot" style="background:'+dotColor+';box-shadow:0 0 8px '+dotColor+'55"></div><h1>🇦🇪 UAE NEWS MONITOR</h1></div>';
+  h+='<div class="hdr-right">';
+  if(timeStr)h+='<span>'+timeStr+'</span>';
+  h+='<span>'+cdText+'</span>';
+  if(state!=="loading")h+='<button class="rbtn" onclick="loadNews()">↻ Refresh</button>';
+  h+='</div></div>';
 
-  /* HEADER */
-  html += '<div class="hdr">';
-  html += '<div class="hdr-row">';
-  html += '<div class="hdr-left"><div class="dot" style="background:' + dotColor + ';box-shadow:0 0 6px ' + dotColor + '44"></div><h1>UAE NEWS MONITOR</h1></div>';
-  html += '<div class="hdr-right">';
-  if (timeStr) html += '<span>' + timeStr + '</span>';
-  html += '<span>' + cdText + '</span>';
-  if (state !== "loading") html += '<button class="refresh-btn" onclick="loadNews()">↻</button>';
-  html += '</div></div>';
-
-  /* DAYS STRIP */
-  if (news.length > 0) {
-    html += '<div class="days">';
-    html += '<button class="dbtn' + (!selDay ? ' active' : '') + '" onclick="window._setDay(null)">';
-    html += '<div class="dw">' + (!selDay ? 'ALL' : 'ALL') + '</div><div class="dd">' + news.length + '</div></button>';
-    days.forEach(function(d) {
-      var ct = 0;
-      news.forEach(function(n) { if (n.date === d.key) ct++; });
-      var active = selDay === d.key;
-      html += '<button class="dbtn' + (active ? ' active' : '') + '" style="opacity:' + (ct > 0 ? '1' : '.3') + '" onclick="window._setDay(\'' + d.key + '\')">';
-      html += '<div class="dw">' + (d.today ? 'TODAY' : d.wd) + '</div>';
-      html += '<div class="dd">' + d.d + '</div>';
-      if (ct > 0) html += '<div class="ddot"></div>';
-      html += '</button>';
+  /* Days strip */
+  if(news.length>0){
+    h+='<div class="days">';
+    var allDayCount=selDay?news.filter(function(n){return n.date===selDay;}).length:news.length;
+    h+='<button class="dbtn'+(!selDay?' on':'')+'" onclick="window._sd(null)">';
+    h+='<div class="dw">ALL</div><div class="dd">'+news.length+'</div>';
+    h+='<div class="dc">stories</div></button>';
+    days.forEach(function(d){
+      var ct=0;news.forEach(function(n){if(n.date===d.key)ct++;});
+      var on=selDay===d.key;
+      h+='<button class="dbtn'+(on?' on':'')+'" style="opacity:'+(ct>0?'1':'.3')+'" onclick="window._sd(\''+d.key+'\')">';
+      h+='<div class="dw">'+(d.today?"TODAY":d.wd)+'</div>';
+      h+='<div class="dd">'+d.d+'</div>';
+      h+='<div class="dc">'+(ct>0?ct+' article'+(ct>1?'s':''):'—')+'</div>';
+      h+='</button>';
     });
-    html += '</div>';
+    h+='</div>';
   }
-  html += '</div>'; // end hdr
+  h+='</div></div>'; /* end hdr */
 
-  /* MAIN */
-  html += '<div class="main">';
+  /* === MAIN === */
+  h+='<div class="main">';
 
-  /* LOADING STATE */
-  if (state === "loading" && news.length === 0) {
-    html += '<div class="loading-box"><div class="spinner"></div>';
-    html += '<div style="color:#94a3b8;font-size:14px;margin-bottom:4px">Loading UAE news feeds…</div>';
-    html += '<div style="color:#475569;font-size:11px">Fetching from Google News RSS</div></div>';
-    html += '</div>';
-    document.getElementById("app").innerHTML = html;
-    return;
+  /* Loading */
+  if(state==="loading"&&news.length===0){
+    h+='<div class="ld"><div class="spin"></div>';
+    h+='<div style="color:#94a3b8;font-size:15px;margin-bottom:6px">Loading UAE news feeds…</div>';
+    h+='<div style="color:#475569;font-size:12px">Fetching from multiple RSS sources</div></div>';
+    h+='</div>';
+    document.getElementById("app").innerHTML=h;return;
   }
-
-  /* ERROR STATE */
-  if (state === "error" && news.length === 0) {
-    html += '<div class="error-box"><div style="font-size:28px;margin-bottom:12px">⚠️</div>';
-    html += '<div style="color:#f87171;font-size:13px;margin-bottom:4px">Could not load news feeds</div>';
-    html += '<div style="color:#475569;font-size:11px;margin-bottom:20px">RSS proxies may be temporarily unavailable</div>';
-    html += '<button class="retry-btn" onclick="loadNews()">Retry</button></div>';
-    html += '</div>';
-    document.getElementById("app").innerHTML = html;
-    return;
+  /* Error */
+  if(state==="error"&&news.length===0){
+    h+='<div class="err"><div style="font-size:32px;margin-bottom:16px">⚠️</div>';
+    h+='<div style="color:#f87171;font-size:14px;margin-bottom:6px">Could not load news feeds</div>';
+    h+='<div style="color:#475569;font-size:12px;margin-bottom:24px">RSS proxies may be temporarily unavailable</div>';
+    h+='<button class="errbtn" onclick="loadNews()">Retry</button></div></div>';
+    document.getElementById("app").innerHTML=h;return;
   }
+  /* Soft error */
+  if(softError)h+='<div class="swarn">⚠️ '+esc(softError)+'</div>';
 
-  /* SOFT ERROR */
-  if (softError) {
-    html += '<div class="soft-warn">⚠️ ' + esc(softError) + '</div>';
-  }
+  /* Two-column layout */
+  h+='<div class="top-bar">';
 
-  /* STATS */
-  html += '<div class="stats">';
-  html += '<div class="sbox"><div class="sv" style="color:#60a5fa">' + news.length + '</div><div class="sl">stories</div></div>';
-  html += '<div class="sbox"><div class="sv" style="color:#f87171">' + urgCount + '</div><div class="sl">urgent</div></div>';
-  html += '<div class="sbox"><div class="sv" style="color:#4ade80">' + todayCount + '</div><div class="sl">today</div></div>';
-  html += '</div>';
+  /* Sidebar — categories */
+  h+='<div class="sidebar"><div class="cat-list">';
+  var totalFiltered=dayScoped.length;
+  var allOn=selCat==="ALL";
+  var gc=COLORS.GENERAL;
+  h+='<div class="cat-item'+(allOn?' on':'')+'" style="--cbg:rgba(255,255,255,.05);--cbd:#475569;--ctx:#e2e8f0" onclick="window._sc(\'ALL\')">';
+  h+='<span class="cname"><span class="cdot" style="background:#94a3b8"></span>All News</span>';
+  h+='<span class="ccount">'+totalFiltered+'</span></div>';
 
-  /* CATEGORY PILLS */
-  html += '<div class="pills">';
-  cats.forEach(function(f) {
-    var c = COLORS[f] || COLORS.GENERAL;
-    var active = selCat === f;
-    if (active) {
-      html += '<button class="pill on" style="--pbg:' + c.bg + ';--pbd:' + c.bd + ';--ptx:' + c.tx + '" onclick="window._setCat(\'' + f + '\')">' + f + '</button>';
-    } else {
-      html += '<button class="pill" onclick="window._setCat(\'' + f + '\')">' + f + '</button>';
-    }
+  catData.forEach(function(cd){
+    var c=COLORS[cd.c]||COLORS.GENERAL;
+    var on=selCat===cd.c;
+    h+='<div class="cat-item'+(on?' on':'')+'" style="--cbg:'+c.bg+';--cbd:'+c.bd+';--ctx:'+c.tx+'" onclick="window._sc(\''+cd.c+'\')">';
+    h+='<span class="cname"><span class="cdot" style="background:'+c.bd+'"></span>'+cd.c+'</span>';
+    h+='<span class="ccount">'+cd.n+'</span></div>';
   });
-  html += '</div>';
+  h+='</div></div>';
 
-  /* NEWS CARDS */
-  html += '<div class="cards">';
-  if (filtered.length === 0) {
-    html += '<div class="empty">No stories match this filter.</div>';
+  /* Feed — cards */
+  h+='<div class="feed"><div class="cards">';
+  if(filtered.length===0){
+    h+='<div class="empty">No stories match this filter combination.</div>';
   }
-  filtered.forEach(function(n, i) {
-    var c = COLORS[n.cat] || COLORS.GENERAL;
-    var k = selCat + "-" + (selDay || "all") + "-" + i;
-    var open = expanded === k;
-
-    html += '<div class="card' + (n.urgent ? ' urgent' : '') + '" onclick="window._toggle(\'' + k + '\')">';
-    html += '<div class="card-inner" style="--cbd:' + c.bd + '">';
-
-    // Top bar
-    html += '<div class="card-top">';
-    html += '<span class="card-tag" style="--cbg:' + c.bg + ';--ctx:' + c.tx + '">' + esc(n.cat) + '</span>';
-    if (n.urgent) html += '<span class="card-urg">URGENT</span>';
-    html += '<span class="card-time">' + esc(n.time) + '</span>';
-    html += '</div>';
-
-    // Title
-    html += '<div class="card-title">' + esc(n.title) + '</div>';
-
-    // Expanded
-    if (open) {
-      html += '<div class="card-expand">';
-      html += '<div class="card-desc">' + esc(n.desc || "No description available.") + '</div>';
-      html += '<div class="card-foot">';
-      html += '<span class="card-src">' + esc(n.src) + '</span>';
-      html += '<a class="card-link" href="' + esc(n.link) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read article →</a>';
-      html += '</div></div>';
+  filtered.forEach(function(n,i){
+    var c=COLORS[n.cat]||COLORS.GENERAL;
+    var k=selCat+"-"+(selDay||"a")+"-"+i;
+    var open=expanded===k;
+    h+='<div class="card'+(n.urgent?' urg':'')+'" onclick="window._tg(\''+k+'\')">';
+    h+='<div class="cin" style="--cbd:'+c.bd+'">';
+    h+='<div class="ctop">';
+    h+='<span class="ctag" style="--cbg:'+c.bg+';--ctx:'+c.tx+'">'+esc(n.cat)+'</span>';
+    if(n.urgent)h+='<span class="curg">URGENT</span>';
+    h+='<span class="ctime">'+esc(n.time)+'</span></div>';
+    h+='<div class="ctitle">'+esc(n.title)+'</div>';
+    if(open){
+      h+='<div class="cexp">';
+      h+='<div class="cdesc">'+esc(n.desc||"No description available.")+'</div>';
+      h+='<div class="cfoot">';
+      h+='<span class="csrc">'+esc(n.src)+'</span>';
+      h+='<a class="clink" href="'+esc(n.link)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full article →</a>';
+      h+='</div></div>';
     }
-
-    html += '<div class="card-toggle">' + (open ? '▲ Less' : '▼ More') + '</div>';
-    html += '</div></div>';
+    h+='<div class="cmore">'+(open?'▲ Collapse':'▼ Read more')+'</div>';
+    h+='</div></div>';
   });
-  html += '</div>';
+  h+='</div></div>'; /* end feed */
+  h+='</div>'; /* end top-bar */
 
-  html += '<div class="footer">Powered by Google News RSS • Auto-refreshes every 10 min</div>';
-  html += '</div>'; // end main
+  h+='<div class="foot">Powered by Google News RSS • Auto-refreshes every 10 minutes • '+news.length+' articles loaded</div>';
+  h+='</div>'; /* end main */
 
-  document.getElementById("app").innerHTML = html;
+  document.getElementById("app").innerHTML=h;
 }
 
-/* ===== GLOBAL HANDLERS ===== */
-window._setDay = function(d) { selDay = (selDay === d) ? null : d; expanded = null; render(); };
-window._setCat = function(c) { selCat = c; expanded = null; render(); };
-window._toggle = function(k) { expanded = (expanded === k) ? null : k; render(); };
+/* Handlers */
+window._sd=function(d){selDay=(selDay===d)?null:d;expanded=null;render();};
+window._sc=function(c){selCat=c;expanded=null;render();};
+window._tg=function(k){expanded=(expanded===k)?null:k;render();};
 
-/* ===== INIT ===== */
+/* Init */
 render();
 loadNews();
-setInterval(loadNews, REFRESH_MS);
-setInterval(function() {
-  countdown = Math.max(0, countdown - 1);
-  var el = document.querySelector(".hdr-right span:nth-child(2)");
-  if (el) el.textContent = Math.floor(countdown/60) + ":" + String(countdown%60).padStart(2,"0");
-}, 1000);
+setInterval(loadNews,REFRESH_MS);
+setInterval(function(){
+  countdown=Math.max(0,countdown-1);
+  var el=document.querySelector(".hdr-right span:nth-child(2)");
+  if(el)el.textContent=Math.floor(countdown/60)+":"+String(countdown%60).padStart(2,"0");
+},1000);
 </script>
 </body>
 </html>

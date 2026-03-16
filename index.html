@@ -45,7 +45,6 @@
       50% { opacity: 0.3; }
     }
 
-    /* ── TICKER ── */
     .ticker-wrap {
       background: #161b22;
       border-top: 2px solid #58a6ff;
@@ -96,7 +95,15 @@
       font-size: 0.6rem;
     }
 
-    /* ── STATUS ── */
+    .fallback-banner {
+      background: #21262d;
+      border-bottom: 1px solid #f0883e;
+      padding: 6px 24px;
+      font-size: 0.78rem;
+      color: #f0883e;
+      display: none;
+    }
+
     .status {
       text-align: center;
       padding: 40px;
@@ -104,7 +111,6 @@
       font-size: 0.9rem;
     }
 
-    /* ── NEWS CARDS ── */
     .news-grid {
       flex: 1;
       overflow-y: auto;
@@ -160,17 +166,19 @@
     <h1>🇦🇪 UAE News Monitor</h1>
   </header>
 
-  <!-- TICKER -->
   <div class="ticker-wrap">
     <span class="ticker-label">LIVE</span>
     <span class="ticker-track" id="tickerTrack">
-      <span class="ticker-item">Loading UAE news...</span>
+      <span class="ticker-item">Loading news...</span>
     </span>
   </div>
 
-  <!-- CARDS -->
+  <div class="fallback-banner" id="fallbackBanner">
+    ⚠️ No UAE-specific stories right now — showing latest Middle East news from Al Jazeera
+  </div>
+
   <div class="news-grid" id="newsGrid">
-    <div class="status">⏳ Fetching latest UAE news from Al Jazeera...</div>
+    <div class="status">⏳ Fetching latest news from Al Jazeera...</div>
   </div>
 
   <footer>Source: Al Jazeera RSS &nbsp;|&nbsp; Auto-refreshes every 10 minutes</footer>
@@ -182,10 +190,10 @@
   ];
 
   const RSS_URL = 'https://www.aljazeera.com/xml/rss/all.xml';
-  const PROXY = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
+  const PROXY   = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
 
   function isUAE(text) {
-    const t = text.toLowerCase();
+    const t = (text || '').toLowerCase();
     return UAE_KEYWORDS.some(k => t.includes(k));
   }
 
@@ -200,31 +208,39 @@
   async function fetchNews() {
     try {
       const res  = await fetch(PROXY);
+      if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.text();
-      const xml = new DOMParser().parseFromString(data, 'text/xml');
+      const xml  = new DOMParser().parseFromString(data, 'text/xml');
       const items = [...xml.querySelectorAll('item')];
 
-      // Filter UAE-related items only
+      if (items.length === 0) throw new Error('No items in feed');
+
+      // Try UAE-specific first
       const uaeItems = items.filter(item => {
         const title = item.querySelector('title')?.textContent || '';
         const desc  = item.querySelector('description')?.textContent || '';
         return isUAE(title) || isUAE(desc);
       });
 
-      if (uaeItems.length === 0) {
-        document.getElementById('newsGrid').innerHTML =
-          '<div class="status">No UAE-specific news found right now. Check back soon.</div>';
-        document.getElementById('tickerTrack').innerHTML =
-          '<span class="ticker-item">No UAE news at this time — check back soon</span>';
-        return;
-      }
+      const banner = document.getElementById('fallbackBanner');
 
-      renderCards(uaeItems);
-      renderTicker(uaeItems);
+      if (uaeItems.length > 0) {
+        // UAE news found
+        banner.style.display = 'none';
+        renderCards(uaeItems);
+        renderTicker(uaeItems);
+      } else {
+        // No UAE news — fall back to all items
+        banner.style.display = 'block';
+        renderCards(items.slice(0, 20));
+        renderTicker(items.slice(0, 20));
+      }
 
     } catch (e) {
       document.getElementById('newsGrid').innerHTML =
         '<div class="status">⚠️ Could not load news. Will retry in 10 minutes.</div>';
+      document.getElementById('tickerTrack').innerHTML =
+        '<span class="ticker-item">Could not load news — retrying soon</span>';
     }
   }
 
@@ -244,7 +260,6 @@
 
   function renderTicker(items) {
     const track = document.getElementById('tickerTrack');
-    // Duplicate items so the scroll loops seamlessly
     const html = [...items, ...items].map(item => {
       const title = item.querySelector('title')?.textContent || '';
       const link  = item.querySelector('link')?.textContent || '#';
@@ -253,7 +268,6 @@
     track.innerHTML = html;
   }
 
-  // Initial load + auto-refresh every 10 minutes
   fetchNews();
   setInterval(fetchNews, 10 * 60 * 1000);
 </script>

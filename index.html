@@ -98,14 +98,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <script>
 var FEEDS = [
-  "https://news.google.com/rss/search?q=UAE+news&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Dubai+news+today&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+Iran+war+2026&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+flights+airport+DXB&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Abu+Dhabi+news&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+safety+missile+drone&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Strait+of+Hormuz+shipping&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+economy+oil+trade&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=UAE+OR+Dubai+OR+%22Abu+Dhabi%22+OR+Emirates&hl=en&gl=AE&ceid=AE:en&num=40",
+  "https://news.google.com/rss/search?q=UAE+Iran+OR+Dubai+airport+OR+Hormuz+OR+Fujairah&hl=en&gl=AE&ceid=AE:en&num=40",
 ];
 var PROXIES = [
   function(u){return "https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(u)+"&count=25";},
@@ -117,32 +111,39 @@ var debugErrors = [];
 
 /* Categories — ordered by priority */
 var RULES = [
-  {c:"BREAKING",  k:["breaking","just in","flash"]},
-  {c:"MILITARY",  k:["military","troops","warship","navy","air force","bomber","airstrike","pentagon","centcom","army","marine"]},
-  {c:"DEFENCE",   k:["intercept","missile","drone","air defen","ballistic","irgc","shield","radar","patriot"]},
-  {c:"FLIGHTS",   k:["flight","airport","dxb","airline","emirates airline","etihad","aviation","airspace","cancel","passenger","grounded"]},
-  {c:"SAFETY",    k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect","civilian"]},
-  {c:"CONFLICT",  k:["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","weapon","aggression","tension"]},
-  {c:"DIPLOMACY", k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiat","sanction"]},
-  {c:"ECONOMY",   k:["oil price","economic","market","trade","port","shipping","crude","stock","barrel","fuel","refinery","tanker"]},
-  {c:"COMMUNITY", k:["expat","resident","school","remote","daily life","ramadan","community","citizen","worker","visa"]},
+  {c:"BREAKING",   k:["breaking","just in","flash","developing story"]},
+  {c:"MILITARY",   k:["military","troops","warship","navy","air force","bomber","airstrike","pentagon","centcom","army","marine","weapon","arsenal"]},
+  {c:"DEFENCE",    k:["intercept","missile","drone","air defen","ballistic","irgc","shield","radar","patriot","iron dome","thaad"]},
+  {c:"FLIGHTS",    k:["flight","airport","dxb","dwc","airline","emirates airline","etihad","flydubai","aviation","airspace","cancel","passenger","grounded","runway"]},
+  {c:"SAFETY",     k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect","civilian","casualt","injur","killed","debris"]},
+  {c:"CONFLICT",   k:["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","aggression","escalat","offensive"]},
+  {c:"DIPLOMACY",  k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiat","sanction","condemn","bilateral"]},
+  {c:"ECONOMY",    k:["oil price","economic","market","trade","port","shipping","crude","stock","barrel","fuel","refinery","tanker","insurance","supply chain"]},
+  {c:"ENERGY",     k:["oil facility","oil hub","energy","opec","gas","petroleum","pipeline","lng","brent","wti"]},
+  {c:"SHIPPING",   k:["strait","vessel","cargo","ship","maritime","sea lane","blockade","tanker traffic","naval escort"]},
+  {c:"HUMANITARIAN",k:["humanitarian","aid","refugee","displaced","red cross","red crescent","crisis","relief","food","water supply"]},
+  {c:"COMMUNITY",  k:["expat","resident","school","remote","daily life","ramadan","community","citizen","worker","visa","daily"]},
+  {c:"TECH",       k:["data center","ai ","artificial intelligence","cloud","amazon web","cyber","internet","telecom"]},
 ];
 
 var COLORS = {
-  BREAKING: {bg:"rgba(239,68,68,.12)", tx:"#f87171",  bd:"#ef4444"},
-  MILITARY: {bg:"rgba(251,146,60,.12)", tx:"#fdba74",  bd:"#f97316"},
-  DEFENCE:  {bg:"rgba(34,197,94,.12)",  tx:"#86efac",  bd:"#22c55e"},
-  FLIGHTS:  {bg:"rgba(59,130,246,.12)", tx:"#93c5fd",  bd:"#3b82f6"},
-  SAFETY:   {bg:"rgba(245,158,11,.12)", tx:"#fcd34d",  bd:"#f59e0b"},
-  CONFLICT: {bg:"rgba(244,63,94,.12)",  tx:"#fda4af",  bd:"#f43f5e"},
-  DIPLOMACY:{bg:"rgba(168,85,247,.12)", tx:"#d8b4fe",  bd:"#a855f7"},
-  ECONOMY:  {bg:"rgba(234,179,8,.12)",  tx:"#fde047",  bd:"#eab308"},
-  COMMUNITY:{bg:"rgba(99,102,241,.12)", tx:"#a5b4fc",  bd:"#6366f1"},
-  GENERAL:  {bg:"rgba(148,163,184,.08)",tx:"#94a3b8",  bd:"#64748b"},
+  BREAKING:     {bg:"rgba(239,68,68,.12)", tx:"#f87171",  bd:"#ef4444"},
+  MILITARY:     {bg:"rgba(251,146,60,.12)", tx:"#fdba74",  bd:"#f97316"},
+  DEFENCE:      {bg:"rgba(34,197,94,.12)",  tx:"#86efac",  bd:"#22c55e"},
+  FLIGHTS:      {bg:"rgba(59,130,246,.12)", tx:"#93c5fd",  bd:"#3b82f6"},
+  SAFETY:       {bg:"rgba(245,158,11,.12)", tx:"#fcd34d",  bd:"#f59e0b"},
+  CONFLICT:     {bg:"rgba(244,63,94,.12)",  tx:"#fda4af",  bd:"#f43f5e"},
+  DIPLOMACY:    {bg:"rgba(168,85,247,.12)", tx:"#d8b4fe",  bd:"#a855f7"},
+  ECONOMY:      {bg:"rgba(234,179,8,.12)",  tx:"#fde047",  bd:"#eab308"},
+  ENERGY:       {bg:"rgba(217,119,6,.12)",  tx:"#fbbf24",  bd:"#d97706"},
+  SHIPPING:     {bg:"rgba(6,182,212,.12)",  tx:"#67e8f9",  bd:"#06b6d4"},
+  HUMANITARIAN: {bg:"rgba(236,72,153,.12)", tx:"#f9a8d4",  bd:"#ec4899"},
+  COMMUNITY:    {bg:"rgba(99,102,241,.12)", tx:"#a5b4fc",  bd:"#6366f1"},
+  TECH:         {bg:"rgba(20,184,166,.12)", tx:"#5eead4",  bd:"#14b8a6"},
+  GENERAL:      {bg:"rgba(148,163,184,.08)",tx:"#94a3b8",  bd:"#64748b"},
 };
 
-/* Ordered display categories */
-var CAT_ORDER = ["BREAKING","MILITARY","DEFENCE","CONFLICT","SAFETY","FLIGHTS","DIPLOMACY","ECONOMY","COMMUNITY","GENERAL"];
+var CAT_ORDER = ["BREAKING","MILITARY","DEFENCE","CONFLICT","SAFETY","FLIGHTS","DIPLOMACY","ECONOMY","ENERGY","SHIPPING","HUMANITARIAN","COMMUNITY","TECH","GENERAL"];
 
 function classify(text){
   var t = text.toLowerCase();
@@ -204,10 +205,12 @@ async function fetchOne(url){
 async function fetchAll(){
   debugErrors=[];
   var results=[],seen={},now=Date.now(),ago=now-7*86400000;
-  var settled=await Promise.allSettled(FEEDS.map(function(f){return fetchOne(f);}));
-  settled.forEach(function(res){
-    if(res.status!=="fulfilled")return;
-    res.value.forEach(function(item){
+  /* Fetch feeds sequentially with delay to avoid rate limiting */
+  for(var f=0;f<FEEDS.length;f++){
+    if(f>0)await new Promise(function(r){setTimeout(r,1500);});
+    try{
+      var items=await fetchOne(FEEDS[f]);
+      items.forEach(function(item){
       var title=(item.title||"").trim();
       var key=title.toLowerCase().slice(0,50);
       if(!key||seen[key])return;
@@ -222,9 +225,12 @@ async function fetchAll(){
       if(!isUAE)continue;
       results.push({title:title,desc:desc,link:item.link||"#",src:(item.author||"").replace(/^www\./,""),
         cat:classify(title+" "+desc),urgent:isUrgent(title),date:pub.toISOString().slice(0,10),
-        time:pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),ts:pub.getTime()});
+        time:pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),
+        clock:pub.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:true}),
+        ts:pub.getTime()});
     });
-  });
+    }catch(e){debugErrors.push("Feed "+f+": "+e.message);}
+  }
   results.sort(function(a,b){return b.ts-a.ts;});
   return results;
 }
@@ -373,7 +379,7 @@ function render(){
     h+='<div class="ctop">';
     h+='<span class="ctag" style="--cbg:'+c.bg+';--ctx:'+c.tx+'">'+esc(n.cat)+'</span>';
     if(n.urgent)h+='<span class="curg">URGENT</span>';
-    h+='<span class="ctime">'+esc(n.time)+'</span></div>';
+    h+='<span class="ctime">'+esc(n.time)+' · '+esc(n.clock)+'</span></div>';
     h+='<div class="ctitle">'+esc(n.title)+'</div>';
     if(open){
       h+='<div class="cexp">';

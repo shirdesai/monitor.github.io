@@ -1,314 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAE News Monitor</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg0:#05080f;--bg1:#0c1117;--bg2:#111827;--bg3:#151d28;--bg4:#1e293b;
-  --tx0:#e2e8f0;--tx1:#cbd5e1;--tx2:#94a3b8;--tx3:#64748b;--tx4:#475569;--tx5:#334155;--tx6:#1e293b;
-  --hd:rgba(5,8,15,.96);--bdr:#111827;--bdr2:#151d28
-}
-[data-theme="light"]{
-  --bg0:#f8fafc;--bg1:#ffffff;--bg2:#f1f5f9;--bg3:#e2e8f0;--bg4:#cbd5e1;
-  --tx0:#0f172a;--tx1:#1e293b;--tx2:#475569;--tx3:#64748b;--tx4:#94a3b8;--tx5:#cbd5e1;--tx6:#e2e8f0;
-  --hd:rgba(248,250,252,.96);--bdr:#e2e8f0;--bdr2:#e2e8f0
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg0);color:var(--tx0);min-height:100vh;transition:background .3s,color .3s}
-#app{max-width:900px;margin:0 auto;padding:0 16px}
-.hd{position:sticky;top:0;z-index:50;background:var(--hd);backdrop-filter:blur(14px);border-bottom:1px solid var(--bdr);padding:14px 0;transition:background .3s,border-color .3s}
-.hr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.hl{display:flex;align-items:center;gap:10px}
-.hl b{font-size:18px;letter-spacing:.5px}
-.dt{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.hri{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--tx4)}
-.rb{background:none;border:1px solid var(--bg4);color:var(--tx3);font-size:11px;padding:4px 12px;border-radius:8px;cursor:pointer}
-.thm{background:none;border:1px solid var(--bg4);color:var(--tx3);font-size:14px;width:32px;height:28px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .3s,color .3s}
-.ds{display:flex;gap:5px;padding-top:4px}
-.db{flex:1 1 0;background:var(--bg1);border:1px solid var(--bdr2);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center;min-width:0;transition:background .3s,border-color .3s}
-.db.on{background:#3b82f6;border-color:#3b82f6}
-.db .w{font-size:9px;font-weight:600;color:var(--tx4);text-transform:uppercase}
-.db.on .w{color:#dbeafe}
-.db .n{font-size:17px;font-weight:700;color:var(--tx1);line-height:1.3}
-.db.on .n{color:#fff}
-.db .s{font-size:9px;color:var(--tx4);margin-top:2px}
-.db.on .s{color:#bfdbfe}
-.mn{padding:16px 0 32px}
-.tb{display:flex;gap:16px;flex-wrap:wrap}
-.sb{flex:0 0 220px}
-.fd{flex:1;min-width:0}
-@media(max-width:700px){.tb{flex-direction:column}.sb{flex:none}.cl{flex-direction:row!important;overflow-x:auto;gap:6px!important;padding-bottom:4px}.ci{padding:7px 14px!important;white-space:nowrap;font-size:12px!important;border-radius:20px!important;flex-shrink:0}.ci .cc{display:none}}
-.cl{display:flex;flex-direction:column;gap:4px}
-.ci{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-radius:10px;cursor:pointer;border:1px solid transparent;font-size:13px;font-weight:500;transition:background .3s,border-color .3s}
-.ci:hover{background:rgba(128,128,128,.06)}
-.ci.on{border-color:var(--bd);background:var(--bg)}
-.ci .cn{display:flex;align-items:center;gap:8px}
-.ci .cd{width:8px;height:8px;border-radius:50%}
-.ci .cc{font-size:11px;font-weight:700;color:var(--tx4);background:var(--bg2);padding:2px 8px;border-radius:8px;transition:background .3s,color .3s}
-.ci.on .cc{color:var(--tx);background:rgba(128,128,128,.15)}
-.cs{display:flex;flex-direction:column;gap:10px}
-.ca{background:var(--bg1);border:1px solid var(--bdr2);border-radius:14px;cursor:pointer;overflow:hidden;transition:background .3s,border-color .3s}
-.ca:hover{border-color:var(--bg4)}
-.ca.ur{border-color:rgba(239,68,68,.25)}
-.cn2{padding:16px 18px;border-left:3px solid var(--bd,#64748b)}
-.ct{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:8px}
-.tg{font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px}
-.ug{font-size:10px;font-weight:700;color:#ef4444}
-.tm{margin-left:auto;font-size:11px;color:var(--tx4)}
-.tt{font-size:15px;font-weight:600;color:var(--tx0);line-height:1.5;transition:color .3s}
-.ex{margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr2);transition:border-color .3s}
-.dc{font-size:13px;color:var(--tx2);line-height:1.75;margin-bottom:10px;transition:color .3s}
-.ft{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.sr{font-size:11px;color:var(--tx5)}
-.lk{font-size:11px;color:#3b82f6;text-decoration:none;font-weight:600}
-.mr{text-align:right;margin-top:8px;font-size:10px;color:var(--tx5);transition:color .3s}
-.ld{text-align:center;padding:100px 20px}
-.sp{width:44px;height:44px;border-radius:50%;border:3px solid var(--bg4);border-top-color:#3b82f6;margin:0 auto 24px;animation:spin 1s linear infinite}
-.er{text-align:center;padding:80px 20px}
-.eb{background:#3b82f6;color:#fff;border:none;padding:10px 28px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
-.sw{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:8px 14px;margin-bottom:14px;font-size:11px;color:#f59e0b}
-.em{text-align:center;padding:50px 16px;color:var(--tx4);font-size:13px}
-.fo{text-align:center;padding:24px 0;color:var(--tx6);font-size:10px;border-top:1px solid var(--bdr2);margin-top:20px;transition:color .3s,border-color .3s}
-.dg{text-align:left;background:var(--bg1);border:1px solid var(--bg4);border-radius:8px;padding:10px 14px;margin:0 auto 16px;max-width:420px;font-size:10px;color:var(--tx2);transition:background .3s,border-color .3s}
-@keyframes spin{to{transform:rotate(360deg)}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UAE News Monitor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #05080f; color: #e2e8f0; min-height: 100vh; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+    .hdr { position: sticky; top: 0; z-index: 50; background: rgba(5,8,15,.96); backdrop-filter: blur(14px); border-bottom: 1px solid #111827; padding: 16px 0 0; }
+    .hdr-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 12px; }
+    .hdr-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .hdr-left .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; animation: pulse 2s infinite; }
+    .hdr-left h1 { font-size: 18px; font-weight: 700; letter-spacing: .5px; white-space: nowrap; }
+    .hdr-right { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #475569; flex-wrap: wrap; justify-content: flex-end; }
+    .rbtn { background: none; border: 1px solid #1e293b; color: #64748b; font-size: 11px; padding: 4px 12px; border-radius: 8px; cursor: pointer; transition: all .15s; }
+    .rbtn:hover { border-color: #334155; color: #94a3b8; }
+    .rbtn:disabled { opacity: .55; cursor: not-allowed; }
+    .days { display: flex; gap: 5px; padding-bottom: 14px; }
+    .dbtn { flex: 1 1 0; background: #0c1117; border: 1px solid #151d28; border-radius: 10px; padding: 8px 4px; cursor: pointer; text-align: center; min-width: 0; transition: all .15s; color: inherit; }
+    .dbtn:hover { border-color: #1e293b; }
+    .dbtn.on { background: #3b82f6; border-color: #3b82f6; }
+    .dbtn .dw { font-size: 9px; font-weight: 600; color: #475569; text-transform: uppercase; }
+    .dbtn.on .dw { color: #dbeafe; }
+    .dbtn .dd { font-size: 17px; font-weight: 700; color: #cbd5e1; line-height: 1.3; }
+    .dbtn.on .dd { color: #fff; }
+    .dbtn .dc { font-size: 9px; color: #475569; margin-top: 2px; }
+    .dbtn.on .dc { color: #bfdbfe; }
+    .main { padding: 16px 0 32px; }
+    .top-bar { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .sidebar { flex: 0 0 220px; }
+    .feed { flex: 1; min-width: 0; }
+    @media (max-width:700px) { .top-bar { flex-direction: column; } .sidebar { flex: none; } }
+    .cat-list { display: flex; flex-direction: column; gap: 4px; }
+    .cat-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; border-radius: 10px; cursor: pointer; transition: all .15s; border: 1px solid transparent; font-size: 13px; font-weight: 500; }
+    .cat-item:hover { background: rgba(255,255,255,.03); }
+    .cat-item.on { border-color: var(--cbd); background: var(--cbg); }
+    .cat-item .cname { display: flex; align-items: center; gap: 8px; }
+    .cat-item .cdot { width: 8px; height: 8px; border-radius: 50%; }
+    .cat-item .ccount { font-size: 11px; font-weight: 700; color: #475569; background: #111827; padding: 2px 8px; border-radius: 8px; }
+    .cat-item.on .ccount { color: var(--ctx); background: rgba(255,255,255,.08); }
+    @media (max-width:700px) {
+      .cat-list { flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+      .cat-item { padding: 7px 14px; white-space: nowrap; font-size: 12px; border-radius: 20px; flex-shrink: 0; }
+      .cat-item .ccount { display: none; }
+    }
+    .cards { display: flex; flex-direction: column; gap: 10px; }
+    .card { background: #0c1117; border: 1px solid #151d28; border-radius: 14px; cursor: pointer; overflow: hidden; transition: border-color .15s; }
+    .card:hover { border-color: #1e293b; }
+    .card.urg { border-color: rgba(239,68,68,.25); }
+    .cin { padding: 16px 18px; border-left: 3px solid var(--cbd,#64748b); }
+    .ctop { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 8px; }
+    .ctag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: var(--cbg); color: var(--ctx); }
+    .curg { font-size: 10px; font-weight: 700; color: #ef4444; }
+    .ctime { margin-left: auto; font-size: 11px; color: #475569; }
+    .ctitle { font-size: 15px; font-weight: 600; color: #f1f5f9; line-height: 1.5; }
+    .cexp { margin-top: 12px; padding-top: 12px; border-top: 1px solid #151d28; animation: fadeIn .2s; }
+    .cdesc { font-size: 13px; color: #9ca3af; line-height: 1.75; margin-bottom: 10px; }
+    .cfoot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .csrc { font-size: 11px; color: #374151; }
+    .clink { font-size: 11px; color: #3b82f6; text-decoration: none; font-weight: 600; }
+    .clink:hover { text-decoration: underline; }
+    .cmore { text-align: right; margin-top: 8px; font-size: 10px; color: #334155; }
+    .ld { text-align: center; padding: 100px 20px; }
+    .spin { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #1e293b; border-top-color: #3b82f6; margin: 0 auto 24px; animation: spin 1s linear infinite; }
+    .err { text-align: center; padding: 80px 20px; }
+    .errbtn { background: #3b82f6; color: #fff; border: none; padding: 10px 28px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .errbtn:hover { background: #2563eb; }
+    .swarn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.15); border-radius: 10px; padding: 8px 14px; margin-bottom: 14px; font-size: 11px; color: #fbbf24; }
+    .empty { text-align: center; padding: 50px 16px; color: #475569; font-size: 13px; }
+    .foot { text-align: center; padding: 24px 0; color: #1e293b; font-size: 10px; border-top: 1px solid #0c1117; margin-top: 20px; }
+    .dbg { text-align: left; background: #0c1117; border: 1px solid #1e293b; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .dbg-t { font-size: 10px; color: #64748b; margin-bottom: 6px; font-weight: 600; }
+    .dbg-l { font-size: 10px; color: #94a3b8; margin-bottom: 2px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+  </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-(function(){
-"use strict";
+  <div class="wrap" id="app"></div>
 
-var FEEDS=[
-  "https://news.google.com/rss/search?q=UAE+site:aljazeera.com&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Dubai+OR+%22Abu+Dhabi%22+OR+Emirates+site:aljazeera.com&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=Iran+Hormuz+OR+Fujairah+site:aljazeera.com&hl=en&gl=AE&ceid=AE:en"
-];
-var PROXIES=[
-  function(u){return"https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(u)+"&count=30"},
-  function(u){return"https://api.allorigins.win/raw?url="+encodeURIComponent(u)},
-  function(u){return"https://corsproxy.io/?url="+encodeURIComponent(u)}
-];
-var REFRESH=600000;
-var RULES=[
-  {c:"BREAKING",k:["breaking","just in","flash"]},
-  {c:"MILITARY",k:["military","troops","warship","navy","air force","bomber","airstrike","pentagon","centcom","army","marine","weapon"]},
-  {c:"DEFENCE",k:["intercept","missile","drone","air defen","ballistic","irgc","shield","radar","patriot"]},
-  {c:"FLIGHTS",k:["flight","airport","dxb","dwc","airline","etihad","flydubai","aviation","airspace","passenger","grounded","runway"]},
-  {c:"SAFETY",k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect","civilian","casualt","injur","killed","debris"]},
-  {c:"CONFLICT",k:["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","aggression","escalat","offensive"]},
-  {c:"DIPLOMACY",k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiat","sanction","condemn"]},
-  {c:"ECONOMY",k:["oil price","economic","market","trade","stock","barrel","fuel","insurance","supply chain","inflation"]},
-  {c:"ENERGY",k:["oil facility","oil hub","energy","opec","gas","petroleum","pipeline","lng","brent","wti","refinery","crude"]},
-  {c:"SHIPPING",k:["strait","vessel","cargo","ship","maritime","sea lane","blockade","tanker","naval escort","port"]},
-  {c:"HUMANITARIAN",k:["humanitarian","aid","refugee","displaced","red cross","red crescent","relief"]},
-  {c:"COMMUNITY",k:["expat","resident","school","remote","daily life","ramadan","community","citizen","worker","visa"]},
-  {c:"TECH",k:["data center","artificial intelligence","cloud","amazon web","cyber","internet","telecom"]}
-];
-var COLORS={
-  BREAKING:{bg:"rgba(239,68,68,.12)",tx:"#f87171",bd:"#ef4444"},
-  MILITARY:{bg:"rgba(251,146,60,.12)",tx:"#fdba74",bd:"#f97316"},
-  DEFENCE:{bg:"rgba(34,197,94,.12)",tx:"#86efac",bd:"#22c55e"},
-  FLIGHTS:{bg:"rgba(59,130,246,.12)",tx:"#93c5fd",bd:"#3b82f6"},
-  SAFETY:{bg:"rgba(245,158,11,.12)",tx:"#fcd34d",bd:"#f59e0b"},
-  CONFLICT:{bg:"rgba(244,63,94,.12)",tx:"#fda4af",bd:"#f43f5e"},
-  DIPLOMACY:{bg:"rgba(168,85,247,.12)",tx:"#d8b4fe",bd:"#a855f7"},
-  ECONOMY:{bg:"rgba(234,179,8,.12)",tx:"#fde047",bd:"#eab308"},
-  ENERGY:{bg:"rgba(217,119,6,.12)",tx:"#fbbf24",bd:"#d97706"},
-  SHIPPING:{bg:"rgba(6,182,212,.12)",tx:"#67e8f9",bd:"#06b6d4"},
-  HUMANITARIAN:{bg:"rgba(236,72,153,.12)",tx:"#f9a8d4",bd:"#ec4899"},
-  COMMUNITY:{bg:"rgba(99,102,241,.12)",tx:"#a5b4fc",bd:"#6366f1"},
-  TECH:{bg:"rgba(20,184,166,.12)",tx:"#5eead4",bd:"#14b8a6"},
-  GENERAL:{bg:"rgba(148,163,184,.08)",tx:"#94a3b8",bd:"#64748b"}
-};
-var CATORDER=["BREAKING","MILITARY","DEFENCE","CONFLICT","SAFETY","FLIGHTS","DIPLOMACY","ECONOMY","ENERGY","SHIPPING","HUMANITARIAN","COMMUNITY","TECH","GENERAL"];
-var UAEKW=["uae","dubai","abu dhabi","emirates","sharjah","fujairah","ajman","ras al","umm al","dxb","etihad","khalifa","jebel ali","hormuz","gulf state","gulf region","gcc","ncema"];
+  <script>
+    /* ===== CONFIG ===== */
+    var FEEDS = [
+      "https://news.google.com/rss/search?q=UAE+OR+Dubai+OR+%22Abu+Dhabi%22+OR+Emirates&hl=en&gl=AE&ceid=AE:en",
+      "https://news.google.com/rss/search?q=UAE+Iran+OR+Dubai+airport+OR+Hormuz+OR+Fujairah&hl=en&gl=AE&ceid=AE:en"
+    ];
+    var REFRESH_MS = 600000;
+    var JSONP_TIMEOUT_MS = 15000;
+    var debugErrors = [];
 
-var news=[],st="loading",lastUp=null,cd=REFRESH/1000,selCat="ALL",selDay=null,expanded=null,softErr="",dbg=[];
+    /* ===== CATEGORIES ===== */
+    var RULES = [
+      { c:"BREAKING",    k:["breaking","just in","flash","developing story"] },
+      { c:"MILITARY",    k:["military","troops","warship","navy","air force","bomber","airstrike","pentagon","centcom","army","marine","weapon","arsenal"] },
+      { c:"DEFENCE",     k:["intercept","missile","drone","air defen","ballistic","irgc","shield","radar","patriot","iron dome","thaad"] },
+      { c:"FLIGHTS",     k:["flight","airport","dxb","dwc","airline","emirates airline","etihad","flydubai","aviation","airspace","cancel","passenger","grounded","runway"] },
+      { c:"SAFETY",      k:["shelter","evacuat","safety","warning","alert","embassy","consular","danger","protect","civilian","casualt","injur","killed","debris"] },
+      { c:"CONFLICT",    k:["iran","war","strike","attack","bomb","kharg","hormuz","combat","retaliat","aggression","escalat","offensive"] },
+      { c:"DIPLOMACY",   k:["minister","diplomat","resolution","ceasefire","talks","summit","un security","treaty","negotiat","sanction","condemn","bilateral"] },
+      { c:"ECONOMY",     k:["oil price","economic","market","trade","stock","barrel","fuel","insurance","supply chain","inflation"] },
+      { c:"ENERGY",      k:["oil facility","oil hub","energy","opec","gas","petroleum","pipeline","lng","brent","wti","refinery","crude"] },
+      { c:"SHIPPING",    k:["strait","vessel","cargo","ship","maritime","sea lane","blockade","tanker","naval escort","port"] },
+      { c:"HUMANITARIAN",k:["humanitarian","aid","refugee","displaced","red cross","red crescent","crisis","relief"] },
+      { c:"COMMUNITY",   k:["expat","resident","school","remote","daily life","ramadan","community","citizen","worker","visa"] },
+      { c:"TECH",        k:["data center","ai ","artificial intelligence","cloud","amazon web","cyber","internet","telecom"] }
+    ];
 
-function classify(t){t=t.toLowerCase();for(var i=0;i<RULES.length;i++){for(var j=0;j<RULES[i].k.length;j++){if(t.indexOf(RULES[i].k[j])!==-1)return RULES[i].c;}}return"GENERAL";}
-function urgent(t){t=t.toLowerCase();var k=["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy","fire","explosion"];for(var i=0;i<k.length;i++){if(t.indexOf(k[i])!==-1)return true;}return false;}
-function strip(s){return(s||"").replace(/<[^>]*>/g,"").replace(/&[^;]+;/g," ").replace(/\s+/g," ").trim();}
-function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
-function isUAE(t){t=t.toLowerCase();for(var i=0;i<UAEKW.length;i++){if(t.indexOf(UAEKW[i])!==-1)return true;}return false;}
+    var COLORS = {
+      BREAKING:     { bg:"rgba(239,68,68,.12)",  tx:"#f87171",  bd:"#ef4444" },
+      MILITARY:     { bg:"rgba(251,146,60,.12)", tx:"#fdba74",  bd:"#f97316" },
+      DEFENCE:      { bg:"rgba(34,197,94,.12)",  tx:"#86efac",  bd:"#22c55e" },
+      FLIGHTS:      { bg:"rgba(59,130,246,.12)", tx:"#93c5fd",  bd:"#3b82f6" },
+      SAFETY:       { bg:"rgba(245,158,11,.12)", tx:"#fcd34d",  bd:"#f59e0b" },
+      CONFLICT:     { bg:"rgba(244,63,94,.12)",  tx:"#fda4af",  bd:"#f43f5e" },
+      DIPLOMACY:    { bg:"rgba(168,85,247,.12)", tx:"#d8b4fe",  bd:"#a855f7" },
+      ECONOMY:      { bg:"rgba(234,179,8,.12)",  tx:"#fde047",  bd:"#eab308" },
+      ENERGY:       { bg:"rgba(217,119,6,.12)",  tx:"#fbbf24",  bd:"#d97706" },
+      SHIPPING:     { bg:"rgba(6,182,212,.12)",  tx:"#67e8f9",  bd:"#06b6d4" },
+      HUMANITARIAN: { bg:"rgba(236,72,153,.12)", tx:"#f9a8d4",  bd:"#ec4899" },
+      COMMUNITY:    { bg:"rgba(99,102,241,.12)", tx:"#a5b4fc",  bd:"#6366f1" },
+      TECH:         { bg:"rgba(20,184,166,.12)", tx:"#5eead4",  bd:"#14b8a6" },
+      GENERAL:      { bg:"rgba(148,163,184,.08)", tx:"#94a3b8", bd:"#64748b" }
+    };
 
-function parseJSON(data){if(!data||data.status!=="ok"||!Array.isArray(data.items))return[];return data.items;}
-function parseXML(text){
-  try{var doc=(new DOMParser()).parseFromString(text,"text/xml"),items=doc.querySelectorAll("item"),r=[];
-  items.forEach(function(it){r.push({title:(it.querySelector("title")||{}).textContent||"",description:(it.querySelector("description")||{}).textContent||"",link:(it.querySelector("link")||{}).textContent||"#",author:(it.querySelector("source")||{}).textContent||"",pubDate:(it.querySelector("pubDate")||{}).textContent||""});});return r;}catch(e){return[];}
-}
+    var CAT_ORDER = ["BREAKING","MILITARY","DEFENCE","CONFLICT","SAFETY","FLIGHTS","DIPLOMACY","ECONOMY","ENERGY","SHIPPING","HUMANITARIAN","COMMUNITY","TECH","GENERAL"];
+    var UAE_KW = ["uae","dubai","abu dhabi","emirates","sharjah","fujairah","ajman","ras al","umm al","dxb","etihad","khalifa","jebel ali","hormuz","gulf state","gulf region","gcc","ncema"];
 
-function delay(ms){return new Promise(function(r){setTimeout(r,ms);});}
+    /* ===== HELPERS ===== */
+    function pad2(v) { return String(v).padStart(2, "0"); }
 
-async function fetchOne(url){
-  for(var p=0;p<PROXIES.length;p++){
-    try{
-      var res=await fetch(PROXIES[p](url));
-      if(!res.ok){dbg.push("P"+p+": HTTP "+res.status);continue;}
-      var ct=res.headers.get("content-type")||"";
-      var items;
-      if(ct.indexOf("json")!==-1){items=parseJSON(await res.json());}
-      else{items=parseXML(await res.text());}
-      if(items.length>0)return items;
-      dbg.push("P"+p+": 0 items");
-    }catch(e){dbg.push("P"+p+": "+e.message);}
-  }
-  return[];
-}
-
-async function fetchAll(){
-  dbg=[];var results=[],seen={},now=Date.now(),ago=now-7*86400000;
-  for(var f=0;f<FEEDS.length;f++){
-    if(f>0)await delay(1500);
-    var items=await fetchOne(FEEDS[f]);
-    for(var i=0;i<items.length;i++){
-      var it=items[i],title=(it.title||"").trim(),key=title.toLowerCase().slice(0,50);
-      if(!key||seen[key])continue;
-      var pub=new Date(it.pubDate);if(isNaN(pub.getTime())||pub.getTime()<ago)continue;
-      seen[key]=true;
-      var desc=strip(it.description).slice(0,400),full=title+" "+desc;
-      if(!isUAE(full))continue;
-      var source=(it.author||it.link||"").toLowerCase();
-      if(source.indexOf("aljazeera")===-1&&source.indexOf("al jazeera")===-1)continue;
-      results.push({title:title,desc:desc,link:it.link||"#",src:(it.author||"").replace(/^www\./,""),cat:classify(full),urgent:urgent(title),date:pub.toISOString().slice(0,10),time:pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),clock:pub.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:true}),ts:pub.getTime()});
+    function dateKeyLocal(d) {
+      return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
     }
-  }
-  results.sort(function(a,b){return b.ts-a.ts;});
-  return results;
-}
 
-function getDays(){var r=[];for(var i=0;i<7;i++){var d=new Date();d.setDate(d.getDate()-i);r.push({key:d.toISOString().slice(0,10),d:d.getDate(),wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],today:i===0});}return r;}
-function getCats(arr){var c={};for(var i=0;i<arr.length;i++){var k=arr[i].cat;c[k]=(c[k]||0)+1;}var r=[];for(var j=0;j<CATORDER.length;j++){if(c[CATORDER[j]])r.push({c:CATORDER[j],n:c[CATORDER[j]]});}return r;}
-
-function render(){
-  var days=getDays(),mn=Math.floor(cd/60),sc=cd%60;
-  var timeStr=lastUp?lastUp.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"";
-  var dotBg=st==="loading"?"#facc15":st==="ready"?"#22c55e":"#ef4444";
-  var cdTxt=st==="loading"?"loading...":mn+":"+String(sc).padStart(2,"0");
-
-  var filtered=news.filter(function(n){return(selCat==="ALL"||n.cat===selCat)&&(!selDay||n.date===selDay);});
-  var scoped=selDay?news.filter(function(n){return n.date===selDay;}):news;
-  var cats=getCats(scoped);
-
-  var h="";
-
-  // Header
-  h+='<div class="hd"><div class="hr"><div class="hl"><div class="dt" style="background:'+dotBg+'"></div><b>UAE NEWS MONITOR</b></div>';
-  h+='<div class="hri">';
-  if(timeStr)h+="<span>"+timeStr+"</span>";
-  h+='<span id="cd">'+cdTxt+"</span>";
-  if(st!=="loading")h+='<button class="rb" onclick="R()">Refresh</button>';
-  h+='<button class="thm" onclick="TH()" title="Toggle light/dark mode" id="thBtn">'+(darkMode?"&#9790;":"&#9728;")+'</button>';
-  h+="</div></div>";
-
-  // Days
-  if(news.length>0){
-    h+='<div class="ds">';
-    h+='<div class="db'+(!selDay?" on":"")+'" onclick="D(null)"><div class="w">ALL</div><div class="n">'+news.length+'</div><div class="s">stories</div></div>';
-    for(var i=0;i<days.length;i++){
-      var dy=days[i],ct=news.filter(function(n){return n.date===dy.key;}).length,on=selDay===dy.key;
-      h+='<div class="db'+(on?" on":"")+'" style="opacity:'+(ct?1:.3)+'" onclick="D(\''+dy.key+"')\">";
-      h+='<div class="w">'+(dy.today?"TODAY":dy.wd)+'</div><div class="n">'+dy.d+'</div>';
-      h+='<div class="s">'+(ct?ct+" article"+(ct>1?"s":""):"--")+"</div></div>";
+    function classify(text) {
+      var t = (text || "").toLowerCase();
+      for (var i = 0; i < RULES.length; i++) {
+        for (var j = 0; j < RULES[i].k.length; j++) {
+          if (t.indexOf(RULES[i].k[j]) !== -1) return RULES[i].c;
+        }
+      }
+      return "GENERAL";
     }
-    h+="</div>";
-  }
-  h+="</div>";
 
-  // Main
-  h+='<div class="mn">';
-
-  // Loading
-  if(st==="loading"&&news.length===0){
-    h+='<div class="ld"><div class="sp"></div><div style="color:#94a3b8;font-size:15px;margin-bottom:6px">Loading UAE news...</div><div style="color:#475569;font-size:12px">Fetching from Google News RSS</div></div></div>';
-    document.getElementById("app").innerHTML=h;return;
-  }
-  // Error
-  if(st==="error"&&news.length===0){
-    h+='<div class="er"><div style="font-size:32px;margin-bottom:16px">&#9888;</div>';
-    h+='<div style="color:#f87171;font-size:14px;margin-bottom:6px">Could not load news feeds</div>';
-    h+='<div style="color:#475569;font-size:12px;margin-bottom:12px">All proxies failed - see debug log below</div>';
-    if(dbg.length>0){h+='<div class="dg"><b style="color:#64748b">DEBUG:</b><br>';for(var e=0;e<dbg.length;e++){h+="- "+esc(dbg[e])+"<br>";}h+="</div>";}
-    h+='<button class="eb" onclick="R()">Retry</button></div></div>';
-    document.getElementById("app").innerHTML=h;return;
-  }
-  // Soft error
-  if(softErr)h+='<div class="sw">'+esc(softErr)+"</div>";
-
-  // Layout
-  h+='<div class="tb">';
-
-  // Sidebar
-  h+='<div class="sb"><div class="cl">';
-  h+='<div class="ci'+(selCat==="ALL"?" on":"")+'" style="--bg:rgba(255,255,255,.05);--bd:#475569;--tx:#e2e8f0" onclick="C(\'ALL\')"><span class="cn"><span class="cd" style="background:#94a3b8"></span>All News</span><span class="cc">'+scoped.length+"</span></div>";
-  for(var ci=0;ci<cats.length;ci++){
-    var cat=cats[ci],co=COLORS[cat.c]||COLORS.GENERAL,con=selCat===cat.c;
-    h+='<div class="ci'+(con?" on":"")+'" style="--bg:'+co.bg+";--bd:"+co.bd+";--tx:"+co.tx+'" onclick="C(\''+cat.c+"')\">";
-    h+='<span class="cn"><span class="cd" style="background:'+co.bd+'"></span>'+cat.c+'</span><span class="cc">'+cat.n+"</span></div>";
-  }
-  h+="</div></div>";
-
-  // Cards
-  h+='<div class="fd"><div class="cs">';
-  if(filtered.length===0){h+='<div class="em">No stories match this filter.</div>';}
-  for(var fi=0;fi<filtered.length;fi++){
-    var n=filtered[fi],co2=COLORS[n.cat]||COLORS.GENERAL,k=selCat+selDay+fi,op=expanded===k;
-    h+='<div class="ca'+(n.urgent?" ur":"")+'" onclick="T(\''+k+"')\">";
-    h+='<div class="cn2" style="--bd:'+co2.bd+'">';
-    h+='<div class="ct"><span class="tg" style="background:'+co2.bg+";color:"+co2.tx+'">'+esc(n.cat)+"</span>";
-    if(n.urgent)h+='<span class="ug">URGENT</span>';
-    h+='<span class="tm">'+esc(n.time)+" &middot; "+esc(n.clock)+"</span></div>";
-    h+='<div class="tt">'+esc(n.title)+"</div>";
-    if(op){
-      h+='<div class="ex"><div class="dc">'+esc(n.desc||"No description.")+"</div>";
-      h+='<div class="ft"><span class="sr">'+esc(n.src)+'</span><a class="lk" href="'+esc(n.link)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read article &rarr;</a></div></div>';
+    function isUrgent(title) {
+      var t = (title || "").toLowerCase();
+      var kw = ["breaking","urgent","attack","strike","intercept","halt","suspend","shelter","evacuate","killed","destroy","fire","explosion"];
+      for (var i = 0; i < kw.length; i++) {
+        if (t.indexOf(kw[i]) !== -1) return true;
+      }
+      return false;
     }
-    h+='<div class="mr">'+(op?"&#9650; Collapse":"&#9660; Read more")+"</div>";
-    h+="</div></div>";
-  }
-  h+="</div></div></div>";
-  h+='<div class="fo">Source: Al Jazeera via Google News RSS &middot; Auto-refreshes every 10 min &middot; '+news.length+" articles</div>";
-  h+="</div>";
 
-  document.getElementById("app").innerHTML=h;
-}
+    function strip(html) {
+      var div = document.createElement("div");
+      div.innerHTML = html || "";
+      return (div.textContent || div.innerText || "").replace(/\s+/g, " ").trim();
+    }
 
-async function load(){
-  if(news.length===0)st="loading";
-  softErr="";render();
-  try{
-    var items=await fetchAll();
-    if(items.length===0)throw new Error("No UAE articles found");
-    news=items;lastUp=new Date();cd=REFRESH/1000;st="ready";softErr="";
-  }catch(e){
-    if(news.length>0){softErr="Refresh failed. Showing last data.";cd=REFRESH/1000;}
-    else st="error";
-  }
-  render();
-}
+    function esc(s) {
+      var d = document.createElement("div");
+      d.textContent = s == null ? "" : String(s);
+      return d.innerHTML;
+    }
 
-// Global handlers
-var darkMode=true;
-window.D=function(d){selDay=(selDay===d)?null:d;expanded=null;render();};
-window.C=function(c){selCat=c;expanded=null;render();};
-window.T=function(k){expanded=(expanded===k)?null:k;render();};
-window.R=load;
-window.TH=function(){
-  darkMode=!darkMode;
-  document.documentElement.setAttribute("data-theme",darkMode?"dark":"light");
-  var btn=document.getElementById("thBtn");
-  if(btn)btn.innerHTML=darkMode?"&#9790;":"&#9728;";
-};
+    function safeUrl(url) {
+      try {
+        var u = new URL(url, window.location.href);
+        if (u.protocol === "http:" || u.protocol === "https:") return u.href;
+        return "#";
+      } catch (e) {
+        return "#";
+      }
+    }
 
-// Boot
-render();
-load();
-setInterval(load,REFRESH);
-setInterval(function(){cd=Math.max(0,cd-1);var el=document.getElementById("cd");if(el)el.textContent=Math.floor(cd/60)+":"+String(cd%60).padStart(2,"0");},1000);
+    function isUAEArticle(text) {
+      var t = (text || "").toLowerCase();
+      for (var i = 0; i < UAE_KW.length; i++) {
+        if (t.indexOf(UAE_KW[i]) !== -1) return true;
+      }
+      return false;
+    }
 
-})();
-</script>
+    function parsePubDate(value) {
+      if (!value) return null;
+      var d = new Date(value);
+      if (!isNaN(d.getTime())) return d;
+
+      if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
+        d = new Date(value.replace(" ", "T") + "Z");
+        if (!isNaN(d.getTime())) return d;
+      }
+      return null;
+    }
+
+    function getSourceName(item) {
+      var source = strip(item.author || "");
+      if (source) return source.replace(/^www\./i, "");
+      try {
+        return new URL(item.link).hostname.replace(/^www\./i, "");
+      } catch (e) {
+        return "Unknown source";
+      }
+    }
+
+    /* ===== STATE ===== */
+    var news = [];
+    var appState = "loading";
+    var lastUp = null;
+    var countdown = REFRESH_MS / 1000;
+    var selCat = "ALL";
+    var selDay = null;
+    var expanded = null;
+    var softError = "";
+    var isLoading = false;
+
+    /* ===== JSONP FEED LOADING ===== */
+    function loadFeedJsonp(feedUrl) {
+      return new Promise(function(resolve, reject) {
+        var cbName = "__rsscb_" + Math.random().toString(36).slice(2);
+        var script = document.createElement("script");
+        var timer = null;
+        var done = false;
+
+        function cleanup() {
+          if (timer) clearTimeout(timer);
+          if (script.parentNode) script.parentNode.removeChild(script);
+          try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+        }
+
+        window[cbName] = function(data) {
+          if (done) return;
+          done = true;
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          if (done) return;
+          done = true;
+          cleanup();
+          reject(new Error("JSONP script failed"));
+        };
+
+        timer = setTimeout(function() {
+          if (done) return;
+          done = true;
+          cleanup();
+          reject(new Error("JSONP timeout"));
+        }, JSONP_TIMEOUT_MS);
+
+        script.src =
+          "https://api.rss2json.com/v1/api.json" +
+          "?callback=" + encodeURIComponent(cbName) +
+          "&rss_url=" + encodeURIComponent(feedUrl) +
+          "&_=" + Date.now();
+
+        document.head.appendChild(script);
+      });
+    }
+
+    async function fetchAll() {
+      debugErrors = [];
+      var results = [];
+      var seen = {};
+      var now = Date.now();
+      var cutoff = now - 7 * 86400000;
+
+      for (var f = 0; f < FEEDS.length; f++) {
+        try {
+          if (f > 0) {
+            await new Promise(function(r) { setTimeout(r, 600); });
+          }
+
+          var data = await loadFeedJsonp(FEEDS[f]);
+
+          if (!data || data.status !== "ok" || !Array.isArray(data.items)) {
+            debugErrors.push("Feed " + (f + 1) + ": invalid response");
+            continue;
+          }
+
+          for (var i = 0; i < data.items.length; i++) {
+            var item = data.items[i];
+            var title = strip(item.title || "");
+            if (!title) continue;
+
+            var pub = parsePubDate(item.pubDate);
+            if (!pub || isNaN(pub.getTime()) || pub.getTime() < cutoff) continue;
+
+            var desc = strip(item.description || "").slice(0, 400);
+            var fullText = title + " " + desc;
+            if (!isUAEArticle(fullText)) continue;
+
+            var dedupeKey = title.toLowerCase().slice(0, 90);
+            if (seen[dedupeKey]) continue;
+            seen[dedupeKey] = true;
+
+            var rawId = (item.link || title) + "|" + pub.getTime();
+            results.push({
+              id: encodeURIComponent(rawId),
+              title: title,
+              desc: desc,
+              link: safeUrl(item.link || "#"),
+              src: getSourceName(item),
+              cat: classify(fullText),
+              urgent: isUrgent(title),
+              date: dateKeyLocal(pub),
+              time: pub.toLocaleDateString("en-GB", { day:"numeric", month:"short" }),
+              clock: pub.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit", hour12:true }),
+              ts: pub.getTime()
+            });
+          }
+        } catch (e) {
+          debugErrors.push("Feed " + (f + 1) + ": " + (e && e.message ? e.message : "Request failed"));
+        }
+      }
+
+      results.sort(function(a, b) { return b.ts - a.ts; });
+      return results;
+    }
+
+    async function loadNews() {
+      if (isLoading) return;
+
+      isLoading = true;
+      if (news.length === 0) appState = "loading";
+      softError = "";
+      render();
+
+      try {
+        var items = await fetchAll();
+        if (items.length === 0) throw new Error("No UAE articles found");
+
+        news = items;
+        lastUp = new Date();
+        countdown = REFRESH_MS / 1000;
+        appState = "ready";
+      } catch (e) {
+        if (news.length > 0) {
+          softError = "Refresh failed - showing last loaded data.";
+          countdown = REFRESH_MS / 1000;
+          appState = "ready";
+        } else {
+          appState = "error";
+        }
+      } finally {
+        isLoading = false;
+        render();
+      }
+    }
+
+    /* ===== DATE HELPERS ===== */
+    function getLast7() {
+      var r = [];
+      for (var i = 0; i < 7; i++) {
+        var d = new Date();
+        d.setHours(12, 0, 0, 0);
+        d.setDate(d.getDate() - i);
+        r.push({
+          key: dateKeyLocal(d),
+          d: d.getDate(),
+          wd: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()],
+          today: i === 0
+        });
+      }
+      return r;
+    }
+
+    function getCats(items) {
+      var counts = {};
+      var result = [];
+      for (var i = 0; i < items.length; i++) {
+        var c = items[i].cat;
+        counts[c] = (counts[c] || 0) + 1;
+      }
+      for (var j = 0; j < CAT_ORDER.length; j++) {
+        if (counts[CAT_ORDER[j]]) result.push({ c: CAT_ORDER[j], n: counts[CAT_ORDER[j]] });
+      }
+      return result;
+    }
+
+    /* ===== RENDER ===== */
+    function render() {
+      var days = getLast7();
+      var mn = Math.floor(countdown / 60);
+      var sc = countdown % 60;
+      var timeStr = lastUp ? lastUp.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }) : "";
+      var dotColor = isLoading ? "#facc15" : appState === "ready" ? "#22c55e" : "#ef4444";
+      var cdText = isLoading ? "loading..." : mn + ":" + String(sc).padStart(2, "0");
+
+      var dayScoped = selDay ? news.filter(function(n) { return n.date === selDay; }) : news;
+      var catData = getCats(dayScoped);
+
+      if (selCat !== "ALL") {
+        var exists = false;
+        for (var q = 0; q < catData.length; q++) {
+          if (catData[q].c === selCat) { exists = true; break; }
+        }
+        if (!exists) selCat = "ALL";
+      }
+
+      var filtered = [];
+      for (var i = 0; i < news.length; i++) {
+        var n = news[i];
+        if (selCat !== "ALL" && n.cat !== selCat) continue;
+        if (selDay && n.date !== selDay) continue;
+        filtered.push(n);
+      }
+
+      var h = "";
+
+      h += '<div class="hdr"><div style="max-width:900px;margin:0 auto;padding:0 16px">';
+      h += '<div class="hdr-row">';
+      h += '<div class="hdr-left"><div class="dot" style="background:' + dotColor + ';box-shadow:0 0 8px ' + dotColor + '55"></div><h1>🇦🇪 UAE NEWS MONITOR</h1></div>';
+      h += '<div class="hdr-right">';
+      if (timeStr) h += "<span>" + esc(timeStr) + "</span>";
+      h += '<span id="cdSpan">' + esc(cdText) + "</span>";
+      h += '<button class="rbtn" onclick="loadNews()" ' + (isLoading ? "disabled" : "") + '>↻ Refresh</button>';
+      h += "</div></div>";
+
+      if (news.length > 0) {
+        h += '<div class="days">';
+        h += '<button class="dbtn' + (!selDay ? " on" : "") + '" onclick="window._sd(null)">';
+        h += '<div class="dw">ALL</div><div class="dd">' + news.length + '</div><div class="dc">stories</div></button>';
+
+        for (var d = 0; d < days.length; d++) {
+          var dy = days[d];
+          var ct = 0;
+          for (var j = 0; j < news.length; j++) {
+            if (news[j].date === dy.key) ct++;
+          }
+          var on = selDay === dy.key;
+          h += '<button class="dbtn' + (on ? " on" : "") + '" style="opacity:' + (ct > 0 ? "1" : ".3") + '" onclick="window._sd(\'' + dy.key + '\')">';
+          h += '<div class="dw">' + esc(dy.today ? "TODAY" : dy.wd) + "</div>";
+          h += '<div class="dd">' + dy.d + "</div>";
+          h += '<div class="dc">' + (ct > 0 ? ct + " article" + (ct > 1 ? "s" : "") : "-") + "</div>";
+          h += "</button>";
+        }
+        h += "</div>";
+      }
+
+      h += "</div></div>";
+      h += '<div class="main">';
+
+      if (appState === "loading" && news.length === 0) {
+        h += '<div class="ld"><div class="spin"></div>';
+        h += '<div style="color:#94a3b8;font-size:15px;margin-bottom:6px">Loading UAE news feeds...</div>';
+        h += '<div style="color:#475569;font-size:12px">Fetching via rss2json JSONP</div></div></div>';
+        document.getElementById("app").innerHTML = h;
+        return;
+      }
+
+      if (appState === "error" && news.length === 0) {
+        h += '<div class="err"><div style="font-size:32px;margin-bottom:16px">⚠️</div>';
+        h += '<div style="color:#f87171;font-size:14px;margin-bottom:6px">Could not load news feeds</div>';
+        h += '<div style="color:#475569;font-size:12px;margin-bottom:12px">The RSS source or JSONP conversion failed</div>';
+        if (debugErrors.length > 0) {
+          h += '<div class="dbg"><div class="dbg-t">DEBUG LOG:</div>';
+          for (var e = 0; e < debugErrors.length; e++) {
+            h += '<div class="dbg-l">• ' + esc(debugErrors[e]) + "</div>";
+          }
+          h += "</div>";
+        }
+        h += '<button class="errbtn" onclick="loadNews()">Retry</button></div></div>';
+        document.getElementById("app").innerHTML = h;
+        return;
+      }
+
+      if (softError) h += '<div class="swarn">⚠️ ' + esc(softError) + "</div>";
+
+      h += '<div class="top-bar">';
+
+      h += '<div class="sidebar"><div class="cat-list">';
+      h += '<div class="cat-item' + (selCat === "ALL" ? " on" : "") + '" style="--cbg:rgba(255,255,255,.05);--cbd:#475569;--ctx:#e2e8f0" onclick="window._sc(\'ALL\')">';
+      h += '<span class="cname"><span class="cdot" style="background:#94a3b8"></span>All News</span>';
+      h += '<span class="ccount">' + dayScoped.length + "</span></div>";
+
+      for (var ci = 0; ci < catData.length; ci++) {
+        var cd = catData[ci];
+        var cc = COLORS[cd.c] || COLORS.GENERAL;
+        var con = selCat === cd.c;
+        h += '<div class="cat-item' + (con ? " on" : "") + '" style="--cbg:' + cc.bg + ';--cbd:' + cc.bd + ';--ctx:' + cc.tx + '" onclick="window._sc(\'' + cd.c + '\')">';
+        h += '<span class="cname"><span class="cdot" style="background:' + cc.bd + '"></span>' + esc(cd.c) + "</span>";
+        h += '<span class="ccount">' + cd.n + "</span></div>";
+      }
+      h += "</div></div>";
+
+      h += '<div class="feed"><div class="cards">';
+      if (filtered.length === 0) {
+        h += '<div class="empty">No stories match this filter combination.</div>';
+      }
+
+      for (var fi = 0; fi < filtered.length; fi++) {
+        var item = filtered[fi];
+        var c = COLORS[item.cat] || COLORS.GENERAL;
+        var key = item.id;
+        var open = expanded === key;
+
+        h += '<div class="card' + (item.urgent ? " urg" : "") + '" onclick="window._tg(\'' + key + '\')">';
+        h += '<div class="cin" style="--cbd:' + c.bd + '">';
+        h += '<div class="ctop">';
+        h += '<span class="ctag" style="--cbg:' + c.bg + ';--ctx:' + c.tx + '">' + esc(item.cat) + "</span>";
+        if (item.urgent) h += '<span class="curg">URGENT</span>';
+        h += '<span class="ctime">' + esc(item.time) + ' · ' + esc(item.clock) + "</span></div>";
+        h += '<div class="ctitle">' + esc(item.title) + "</div>";
+
+        if (open) {
+          h += '<div class="cexp">';
+          h += '<div class="cdesc">' + esc(item.desc || "No description available.") + "</div>";
+          h += '<div class="cfoot">';
+          h += '<span class="csrc">' + esc(item.src) + "</span>";
+          h += '<a class="clink" href="' + esc(item.link) + '" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">Read full article →</a>';
+          h += "</div></div>";
+        }
+
+        h += '<div class="cmore">' + (open ? "▲ Collapse" : "▼ Read more") + "</div>";
+        h += "</div></div>";
+      }
+
+      h += "</div></div></div>";
+      h += '<div class="foot">Powered by Google News RSS · Auto-refreshes every 10 minutes · ' + news.length + " articles loaded</div>";
+      h += "</div>";
+
+      document.getElementById("app").innerHTML = h;
+    }
+
+    /* ===== HANDLERS ===== */
+    window._sd = function(d) { selDay = (selDay === d) ? null : d; expanded = null; render(); };
+    window._sc = function(c) { selCat = c; expanded = null; render(); };
+    window._tg = function(k) { expanded = (expanded === k) ? null : k; render(); };
+
+    /* ===== INIT ===== */
+    render();
+    loadNews();
+
+    setInterval(function() {
+      loadNews();
+    }, REFRESH_MS);
+
+    setInterval(function() {
+      countdown = Math.max(0, countdown - 1);
+      var el = document.getElementById("cdSpan");
+      if (el && !isLoading) {
+        el.textContent = Math.floor(countdown / 60) + ":" + String(countdown % 60).padStart(2, "0");
+      }
+    }, 1000);
+  </script>
 </body>
 </html>

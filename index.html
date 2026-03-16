@@ -182,7 +182,7 @@
   ];
 
   const RSS_URL = 'https://www.aljazeera.com/xml/rss/all.xml';
-  const PROXY   = 'https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL);
+  const PROXY = 'https://corsproxy.io/?' + encodeURIComponent(RSS_URL);
 
   function isUAE(text) {
     const t = text.toLowerCase();
@@ -200,8 +200,8 @@
   async function fetchNews() {
     try {
       const res  = await fetch(PROXY);
-      const data = await res.json();
-      const xml  = new DOMParser().parseFromString(data.contents, 'text/xml');
+      const data = await res.text();
+      const xml = new DOMParser().parseFromString(data, 'text/xml');
       const items = [...xml.querySelectorAll('item')];
 
       // Filter UAE-related items only

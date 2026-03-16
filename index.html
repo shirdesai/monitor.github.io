@@ -71,8 +71,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 "use strict";
 
 var FEEDS=[
-  "https://news.google.com/rss/search?q=UAE+OR+Dubai+OR+%22Abu+Dhabi%22+OR+Emirates&hl=en&gl=AE&ceid=AE:en",
-  "https://news.google.com/rss/search?q=UAE+Iran+OR+Dubai+airport+OR+Hormuz+OR+Fujairah&hl=en&gl=AE&ceid=AE:en"
+  "https://news.google.com/rss/search?q=UAE+site:aljazeera.com&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Dubai+OR+%22Abu+Dhabi%22+OR+Emirates+site:aljazeera.com&hl=en&gl=AE&ceid=AE:en",
+  "https://news.google.com/rss/search?q=Iran+Hormuz+OR+Fujairah+site:aljazeera.com&hl=en&gl=AE&ceid=AE:en"
 ];
 var PROXIES=[
   function(u){return"https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(u)+"&count=30"},
@@ -158,6 +159,8 @@ async function fetchAll(){
       seen[key]=true;
       var desc=strip(it.description).slice(0,400),full=title+" "+desc;
       if(!isUAE(full))continue;
+      var source=(it.author||it.link||"").toLowerCase();
+      if(source.indexOf("aljazeera")===-1&&source.indexOf("al jazeera")===-1)continue;
       results.push({title:title,desc:desc,link:it.link||"#",src:(it.author||"").replace(/^www\./,""),cat:classify(full),urgent:urgent(title),date:pub.toISOString().slice(0,10),time:pub.toLocaleDateString("en-GB",{day:"numeric",month:"short"}),clock:pub.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:true}),ts:pub.getTime()});
     }
   }
@@ -254,7 +257,7 @@ function render(){
     h+="</div></div>";
   }
   h+="</div></div></div>";
-  h+='<div class="fo">Powered by Google News RSS &middot; Auto-refreshes every 10 min &middot; '+news.length+" articles</div>";
+  h+='<div class="fo">Source: Al Jazeera via Google News RSS &middot; Auto-refreshes every 10 min &middot; '+news.length+" articles</div>";
   h+="</div>";
 
   document.getElementById("app").innerHTML=h;

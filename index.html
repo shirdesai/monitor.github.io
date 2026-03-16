@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UAE News Monitor</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #161b22;
+      padding: 16px 24px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: #58a6ff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      background: #f85149;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      background: #161b22;
+      border-top: 2px solid #58a6ff;
+      border-bottom: 1px solid #30363d;
+      padding: 10px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-label {
+      display: inline-block;
+      background: #58a6ff;
+      color: #0d1117;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      margin-right: 16px;
+      letter-spacing: 1px;
+    }
+
+    .ticker-track {
+      display: inline-block;
+      animation: ticker-scroll 60s linear infinite;
+    }
+
+    .ticker-track:hover { animation-play-state: paused; }
+
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ticker-item {
+      display: inline-block;
+      margin-right: 60px;
+      font-size: 0.85rem;
+      color: #e6edf3;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .ticker-item:hover { color: #58a6ff; }
+
+    .ticker-item::before {
+      content: '◆';
+      color: #58a6ff;
+      margin-right: 8px;
+      font-size: 0.6rem;
+    }
+
+    /* ── STATUS ── */
+    .status {
+      text-align: center;
+      padding: 40px;
+      color: #8b949e;
+      font-size: 0.9rem;
+    }
+
+    /* ── NEWS CARDS ── */
+    .news-grid {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      align-content: start;
+    }
+
+    .news-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .news-card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+    }
+
+    .news-card .date {
+      font-size: 0.72rem;
+      color: #8b949e;
+      margin-bottom: 8px;
+    }
+
+    .news-card h3 {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #e6edf3;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.72rem;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="live-dot"></div>
+    <h1>🇦🇪 UAE News Monitor</h1>
+  </header>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <span class="ticker-label">LIVE</span>
+    <span class="ticker-track" id="tickerTrack">
+      <span class="ticker-item">Loading UAE news...</span>
+    </span>
+  </div>
+
+  <!-- CARDS -->
+  <div class="news-grid" id="newsGrid">
+    <div class="status">⏳ Fetching latest UAE news from Al Jazeera...</div>
+  </div>
+
+  <footer>Source: Al Jazeera RSS &nbsp;|&nbsp; Auto-refreshes every 10 minutes</footer>
+
+<script>
+  const UAE_KEYWORDS = [
+    'uae', 'dubai', 'abu dhabi', 'emirates', 'emirati',
+    'sharjah', 'ajman', 'fujairah', 'ras al khaimah', 'umm al quwain'
+  ];
+
+  const RSS_URL = 'https://www.aljazeera.com/xml/rss/all.xml';
+  const PROXY   = 'https://api.allorigins.win/get?url=' + encodeURIComponent(RSS_URL);
+
+  function isUAE(text) {
+    const t = text.toLowerCase();
+    return UAE_KEYWORDS.some(k => t.includes(k));
+  }
+
+  function formatDate(str) {
+    const d = new Date(str);
+    return isNaN(d) ? str : d.toLocaleString('en-AE', {
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  async function fetchNews() {
+    try {
+      const res  = await fetch(PROXY);
+      const data = await res.json();
+      const xml  = new DOMParser().parseFromString(data.contents, 'text/xml');
+      const items = [...xml.querySelectorAll('item')];
+
+      // Filter UAE-related items only
+      const uaeItems = items.filter(item => {
+        const title = item.querySelector('title')?.textContent || '';
+        const desc  = item.querySelector('description')?.textContent || '';
+        return isUAE(title) || isUAE(desc);
+      });
+
+      if (uaeItems.length === 0) {
+        document.getElementById('newsGrid').innerHTML =
+          '<div class="status">No UAE-specific news found right now. Check back soon.</div>';
+        document.getElementById('tickerTrack').innerHTML =
+          '<span class="ticker-item">No UAE news at this time — check back soon</span>';
+        return;
+      }
+
+      renderCards(uaeItems);
+      renderTicker(uaeItems);
+
+    } catch (e) {
+      document.getElementById('newsGrid').innerHTML =
+        '<div class="status">⚠️ Could not load news. Will retry in 10 minutes.</div>';
+    }
+  }
+
+  function renderCards(items) {
+    const grid = document.getElementById('newsGrid');
+    grid.innerHTML = items.map(item => {
+      const title = item.querySelector('title')?.textContent || 'No title';
+      const link  = item.querySelector('link')?.textContent || '#';
+      const date  = item.querySelector('pubDate')?.textContent || '';
+      return `
+        <a class="news-card" href="${link}" target="_blank" rel="noopener">
+          <div class="date">${formatDate(date)}</div>
+          <h3>${title}</h3>
+        </a>`;
+    }).join('');
+  }
+
+  function renderTicker(items) {
+    const track = document.getElementById('tickerTrack');
+    // Duplicate items so the scroll loops seamlessly
+    const html = [...items, ...items].map(item => {
+      const title = item.querySelector('title')?.textContent || '';
+      const link  = item.querySelector('link')?.textContent || '#';
+      return `<span class="ticker-item" onclick="window.open('${link}','_blank')">${title}</span>`;
+    }).join('');
+    track.innerHTML = html;
+  }
+
+  // Initial load + auto-refresh every 10 minutes
+  fetchNews();
+  setInterval(fetchNews, 10 * 60 * 1000);
+</script>
+</body>
+</html>
